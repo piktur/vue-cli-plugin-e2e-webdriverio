@@ -1,0 +1,27 @@
+{
+  "name": "vue-cli-plugin-e2e-webdriverio",
+  "version": "1.0.0",
+  "description": "e2e-webdriverio plugin for vue-cli",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/piktur/vue-cli-plugin-e2e-webdriverio.git"
+  },
+  "author": "Daniel Small <piktur.io@gmail.com>",
+  "homepage": "https://github.com/piktur/vue-cli-plugin-e2e-webdriverio#readme",
+  "keywords": [
+    "vue",
+    "cli",
+    "vue-cli",
+    "e2e-webdriverio",
+    "e2e",
+    "test",
+    "webdriver",
+    "wdio"
+  ],
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+
+  }
+}
