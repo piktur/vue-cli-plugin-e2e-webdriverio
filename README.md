@@ -28,17 +28,13 @@ By default, tests are run in interactive mode, to run in **headless** mode (for 
 This plugin uses the **Chrome** driver by default. If you wish to run e2e tests in additional browsers, define configuration within `<projectRoot>/wdio.conf.js`.
 Configuration defined at this path will be merged with the internal `Webdriver` config.
 
-Or, to override internal configuration entirely pass use option `--config` to specify alternate configuration file.
+Or, to override internal configuration entirely use option `--config` to specify alternate configuration file.
 
 Consult [WebdriverIO Configuration](http://webdriver.io/guide/getstarted/configuration.html) for available options and browser configuration.
 
 ### Hooks
 
-Any custom WebdriverIO hook definitions will be appended to defaults.
-
-### Capabilities
-
-This plugin provides sensible defaults, to use an entirely different set of capabilities override the capabilities property within `<projectRoot>/wdio.conf.js`.
+WebdriverIO hooks defined in `<projectRoot>/wdio.conf.js` will be appended to behaviour provided by plugin defaults.
 
 ## Installing in an Already Created Project
 
