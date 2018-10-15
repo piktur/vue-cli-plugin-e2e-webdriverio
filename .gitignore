@@ -1,3 +1,4 @@
+__mocks__/dummy
 node_modules
 .DS_Store
 dist
