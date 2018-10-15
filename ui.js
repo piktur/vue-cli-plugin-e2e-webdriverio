@@ -33,7 +33,7 @@ module.exports = api => {
       }, {
         name: 'headless',
         type: 'confirm',
-        default: true,
+        default: false,
         description: 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.headless'
       },
     ],

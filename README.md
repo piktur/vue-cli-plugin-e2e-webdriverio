@@ -4,9 +4,7 @@
 
 ## Injected Commands
 
-`vue-cli-service test:e2e`
-
-Run e2e tests with [WebdriverIO](http://webdriver.io/)
+Run e2e tests with [WebdriverIO](http://webdriver.io/) `yarn run test:e2e [options]`
 
 Options:
 
@@ -19,7 +17,7 @@ Options:
 
 ```
 
-Additionally, all [WebdriverIO CLI](https://github.com/webdriverio/webdriverio/blob/master/packages/wdio-cli/src/config.js) options are also supported.
+Additionally, all [WebdriverIO CLI](https://github.com/webdriverio/webdriverio/blob/master/packages/wdio-cli/src/config.js) options are supported.
 
 By default, tests are run in interactive mode, to run in **headless** mode (for **CI**) use option `--headless`.
 
