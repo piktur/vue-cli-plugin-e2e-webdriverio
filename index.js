@@ -22,6 +22,8 @@ module.exports = (api, options) => {
       logger.error(err)
     }
 
+    process.env.VUE_CONTEXT = api.resolve('./')
+
     wdioCapabilities(rawArgs)
     wdioMode(rawArgs)
     wdioConfig(rawArgs, api.resolve('wdio.conf.js'))
@@ -51,7 +53,6 @@ module.exports.defaultModes = {
 }
 
 async function wdioServer(rawArgs, api) {
-  const { logger } = require('@vue/cli-shared-utils')
   const baseUrlPos = rawArgs.indexOf('--baseUrl')
   const serverPromise = baseUrlPos === -1
     ? api.service.run('serve')
@@ -62,19 +63,18 @@ async function wdioServer(rawArgs, api) {
     rawArgs.push('--baseUrl', url)
     return server
   } catch (err) {
-    logger.error(err)
+    throw err
   }
 }
 
 async function wdioPort(rawArgs) {
-  const { logger } = require('@vue/cli-shared-utils')
   const getPort = require('get-port')
 
   if (rawArgs.indexOf('--port') === -1) {
     try {
       rawArgs.push('--port', await getPort()) // find available port
     } catch (err) {
-      logger.error(err)
+      throw err
     }
   }
 }
