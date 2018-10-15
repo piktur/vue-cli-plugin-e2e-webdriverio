@@ -30,7 +30,7 @@ if (debug) {
 
 if (process.env.WDIO_CONFIG_OVERRIDE_PATH) {
   const wdioConfigOverride = require(process.env.WDIO_CONFIG_OVERRIDE_PATH)
-  merge(exports.config, wdioConfigOverride)
+  merge(exports.config, wdioConfigOverride.config)
 }
 
 function resizeViewport() {
