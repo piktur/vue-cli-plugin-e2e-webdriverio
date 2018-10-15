@@ -12,8 +12,16 @@ module.exports = (api, options) => {
       `All WebdriverIO CLI options are also supported.\n` +
       `http://webdriver.io/guide/testrunner/gettingstarted.html`
   }, async (args, rawArgs) => {
-    const server = await wdioServer(rawArgs, api)
-    await wdioPort(rawArgs)
+    const { logger } = require('@vue/cli-shared-utils')
+    let server
+
+    try {
+      server = await wdioServer(rawArgs, api)
+      await wdioPort(rawArgs)
+    } catch (err) {
+      logger.error(err)
+    }
+
     wdioCapabilities(rawArgs)
     wdioMode(rawArgs)
     wdioConfig(rawArgs, api.resolve('wdio.conf.js'))
@@ -38,27 +46,36 @@ module.exports = (api, options) => {
 }
 
 module.exports.defaultModes = {
-  'test:e2e': 'test'
+  // @note If test, specs fail due to broken Webpack HMR server connection
+  'test:e2e': 'production'
 }
 
 async function wdioServer(rawArgs, api) {
+  const { logger } = require('@vue/cli-shared-utils')
   const baseUrlPos = rawArgs.indexOf('--baseUrl')
   const serverPromise = baseUrlPos === -1
     ? api.service.run('serve')
     : Promise.resolve({ url: rawArgs.splice(baseUrlPos, 2)[1] })
 
-  const { server, url } = await serverPromise
-
-  rawArgs.push('--baseUrl', url)
-
-  return server
+  try {
+    const { server, url } = await serverPromise
+    rawArgs.push('--baseUrl', url)
+    return server
+  } catch (err) {
+    logger.error(err)
+  }
 }
 
 async function wdioPort(rawArgs) {
+  const { logger } = require('@vue/cli-shared-utils')
   const getPort = require('get-port')
 
   if (rawArgs.indexOf('--port') === -1) {
-    rawArgs.push('--port', await getPort()) // find available port
+    try {
+      rawArgs.push('--port', await getPort()) // find available port
+    } catch (err) {
+      logger.error(err)
+    }
   }
 }
 
