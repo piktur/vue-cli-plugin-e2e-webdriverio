@@ -1,7 +1,7 @@
 module.exports = api => {
   api.describeTask({
     match: /vue-cli-service test:e2e/,
-    description: 'io.piktur.vue-cli-plugin-e2e-webdriverio.test.description',
+    description: 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.description',
     link: 'https://github.com/piktur/vue-cli-plugin-e2e-webdriverio#injected-commands',
     prompts: [
       {
