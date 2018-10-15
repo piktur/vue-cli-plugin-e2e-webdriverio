@@ -1,0 +1,17 @@
+{
+  "io": {
+    "piktur": {
+      "vue-cli-plugin-e2e-webdriverio": {
+        "tasks": {
+          "test": {
+            "description": "Run e2e tests with WebdriverIO",
+            "baseUrl": "Run e2e tests against given url instead of auto-starting dev server",
+            "capabilities": "Specify browser capabilities to run in",
+            "config": "Use custom webdriver config file (overrides internals)",
+            "headless": "Run e2e tests in headless mode without GUI"
+          }
+        }
+      }
+    }
+  }
+}

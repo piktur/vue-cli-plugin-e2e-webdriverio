@@ -1,36 +1,47 @@
 module.exports = api => {
   api.describeTask({
     match: /vue-cli-service test:e2e/,
-    description: 'com.github.piktur.vue-cli-plugin-e2e-webdriverio.test.description',
+    description: 'io.piktur.vue-cli-plugin-e2e-webdriverio.test.description',
     link: 'https://github.com/piktur/vue-cli-plugin-e2e-webdriverio#injected-commands',
     prompts: [
       {
-        name: 'url',
+        name: 'baseUrl',
         type: 'input',
-        default: '',
-        description: 'com.github.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.url'
+        default: 'http://localhost:8080',
+        description: 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.baseUrl'
       }, {
         name: 'config',
         type: 'input',
-        default: '',
-        description: 'com.github.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.config'
+        default: undefined,
+        description: 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.config'
       }, {
-        name: 'env',
-        type: 'input',
-        default: 'chrome',
-        description: 'com.github.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.env'
+        name: 'capabilities',
+        type: 'checkbox',
+        choices: [
+          {
+            name: 'phablet',
+            value: 'phablet',
+            checked: true,
+          }, {
+            name: 'mobile',
+            value: 'mobile',
+            checked: true,
+          },
+        ],
+        default: 'phablet,mobile',
+        description: 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.capabilities'
       }, {
         name: 'headless',
-        type: 'input',
+        type: 'confirm',
         default: true,
-        decription: 'com.github.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.env'
-      }
+        description: 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.headless'
+      },
     ],
     onBeforeRun: ({ answers, args }) => {
-      if (answers.url) args.push('--url', answers.url)
+      if (answers.baseUrl) args.push('--baseUrl', answers.baseUrl)
       if (answers.config) args.push('--config', answers.config)
-      if (answers.env) args.push('--env', answers.env)
+      if (answers.capabilities) args.push('--capabilities', answers.capabilities)
       if (answers.headless) args.push('--headless')
-    }
+    },
   })
 }
