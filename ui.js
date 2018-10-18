@@ -36,7 +36,7 @@ module.exports = (api, options) => {
         choices: capabilityNames.map(name => ({ name, value: name, checked: false })),
         default: pluginOptions[name] || DEFAULT_CAPABILITIES,
         description: `${namespace}.${name}`,
-          }, {
+      }, {
         name: name = 'headless',
         type: 'confirm',
         default: pluginOptions[name] || false,
@@ -53,7 +53,8 @@ module.exports = (api, options) => {
       if (answers.baseUrl) args.push('--baseUrl', answers.baseUrl)
       if (answers.config) args.push('--config', answers.config)
       if (answers.capabilities) args.push('--capabilities', answers.capabilities)
-      if (answers.headless) args.push('--headless')
+      answers.headless ? args.push('--headless') : args.push('--no-headless')
+      answers.debug ? args.push('--debug') : args.push('--no-debug')
     },
   })
 }
