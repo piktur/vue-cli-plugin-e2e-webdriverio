@@ -1,43 +1,55 @@
-module.exports = api => {
+const {
+  PLUGIN_NAME,
+  DEFAULT_BASE_URL,
+  DEFAULT_CAPABILITIES,
+  DEFAULT_SPECS,
+} = require('./lib/constants')
+const { capabilityNames } = require('./lib/capabilities')
+
+module.exports = (api, options) => {
+  const pluginOptions = options.pluginOptions[PLUGIN_NAME] || {}
+  const namespace = 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test'
+
   api.describeTask({
     match: /vue-cli-service test:e2e/,
-    description: 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.description',
+    description: `${namespace}.description`,
     link: 'https://github.com/piktur/vue-cli-plugin-e2e-webdriverio#injected-commands',
     prompts: [
       {
-        name: 'baseUrl',
+        name: name = 'config',
         type: 'input',
-        default: 'http://localhost:8080',
-        description: 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.baseUrl'
+        default: pluginOptions[name],
+        description: `${namespace}.${name}`,
       }, {
-        name: 'config',
+        name: name = 'specs',
         type: 'input',
-        default: undefined,
-        description: 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.config'
+        default: pluginOptions[name] || DEFAULT_SPECS,
+        description: `${namespace}.${name}`,
       }, {
-        name: 'capabilities',
+        name: name = 'baseUrl',
+        type: 'input',
+        default: pluginOptions[name] || DEFAULT_BASE_URL,
+        description: `${namespace}.${name}`,
+      }, {
+        name: name = 'capabilities',
         type: 'checkbox',
-        choices: [
-          {
-            name: 'phablet',
-            value: 'phablet',
-            checked: true,
+        choices: capabilityNames.map(name => ({ name, value: name, checked: false })),
+        default: pluginOptions[name] || DEFAULT_CAPABILITIES,
+        description: `${namespace}.${name}`,
           }, {
-            name: 'mobile',
-            value: 'mobile',
-            checked: true,
-          },
-        ],
-        default: 'phablet,mobile',
-        description: 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.capabilities'
-      }, {
-        name: 'headless',
+        name: name = 'headless',
         type: 'confirm',
-        default: false,
-        description: 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test.headless'
+        default: pluginOptions[name] || false,
+        description: `${namespace}.${name}`,
+      }, {
+        name: name = 'debug',
+        type: 'confirm',
+        default: pluginOptions[name] || false,
+        description: `${namespace}.${name}`,
       },
     ],
     onBeforeRun: ({ answers, args }) => {
+      if (answers.specs) args.push('--specs', answers.specs)
       if (answers.baseUrl) args.push('--baseUrl', answers.baseUrl)
       if (answers.config) args.push('--config', answers.config)
       if (answers.capabilities) args.push('--capabilities', answers.capabilities)
