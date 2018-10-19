@@ -118,13 +118,26 @@ async function WDIOPort(rawArgs) {
   }
 }
 
-function wdioMode(rawArgs) {
+function WDIOMode(rawArgs, { headless, debug }) {
   const headlessPos = rawArgs.indexOf('--headless')
+  const debugPos = rawArgs.indexOf('--debug')
+
   if (headlessPos === -1) {
-    process.env.DEBUG = '1'
+    !headless &&
+      (process.env.VUE_CLI_WDIO_INTERACTIVE = ON) &&
+      (process.env.VUE_CLI_WDIO_HEADLESS = OFF)
   } else {
+    process.env.VUE_CLI_WDIO_HEADLESS = ON
+    process.env.VUE_CLI_WDIO_INTERACTIVE = OFF
     rawArgs.splice(headlessPos, 1)
   }
+
+  if (debugPos === -1) {
+    debug && (process.env.VUE_CLI_WDIO_DEBUG = ON)
+  } else {
+    process.env.VUE_CLI_WDIO_DEBUG = ON
+    rawArgs.splice(debugPos, 1)
+}
 }
 
 function wdioCapabilities(rawArgs) {
