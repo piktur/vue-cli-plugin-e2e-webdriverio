@@ -6,9 +6,17 @@ const {
 } = require('./lib/constants')
 const { capabilityNames } = require('./lib/capabilities')
 
-module.exports = (api, options) => {
-  const pluginOptions = options.pluginOptions[PLUGIN_NAME] || {}
+module.exports = (api) => {
   const namespace = 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test'
+  let name
+  let pluginOptions
+
+  try {
+    const vueConfig = api.resolve('vue.config.js')
+    pluginOptions = require(vueConfig).pluginOptions[PLUGIN_NAME]
+  } catch (err) {
+    pluginOptions = {}
+  }
 
   api.describeTask({
     match: /vue-cli-service test:e2e/,
@@ -54,9 +62,9 @@ module.exports = (api, options) => {
       },
     ],
     onBeforeRun: ({ answers, args }) => {
+      if (answers.config) args.push('--config', answers.config)
       if (answers.specs) args.push('--specs', answers.specs)
       if (answers.baseUrl) args.push('--baseUrl', answers.baseUrl)
-      if (answers.config) args.push('--config', answers.config)
       if (answers.capabilities) args.push('--capabilities', answers.capabilities)
       answers.headless ? args.push('--headless') : args.push('--no-headless')
       answers.debug ? args.push('--debug') : args.push('--no-debug')
