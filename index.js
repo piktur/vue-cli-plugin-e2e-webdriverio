@@ -43,14 +43,16 @@ module.exports = (api, options) => {
 
     let server
     try {
-      server = await WDIOServer(rawArgs, api, pluginOptions)
-      await WDIOPort(rawArgs)
+      server = await handleBaseUrl(args, rawArgs, api, pluginOptions)
+      await handlePort(args, rawArgs)
     } catch (err) {
       console.error(err)
     }
 
     try {
-      WDIOConfig(rawArgs, api, pluginOptions)
+      handleConfig(args, rawArgs, api, pluginOptions)
+      console.log(rawArgs)
+      console.log(args)
       const runner = await execa(WDIOBinPath(api), rawArgs, { stdio: 'inherit' })
 
       if (server) {
@@ -83,14 +85,15 @@ function WDIOBinPath(api) {
   }
 }
 
-async function WDIOServer(rawArgs, api, { baseUrl }) {
-  const baseUrlPos = rawArgs.indexOf('--baseUrl')
+async function handleBaseUrl(args, rawArgs, api, { baseUrl }) {
   let serverPromise
 
-  if (baseUrlPos === -1) {
-    serverPromise = baseUrl ? Promise.resolve({ url: baseUrl }) : api.service.run('serve')
+  removeArg(rawArgs, 'baseUrl')
+
+  if (args.baseUrl) {
+    serverPromise = Promise.resolve({ url: args.baseUrl })
   } else {
-    serverPromise = Promise.resolve({ url: rawArgs.splice(baseUrlPos, 2)[1] })
+    serverPromise = baseUrl ? Promise.resolve({ url: baseUrl }) : api.service.run('serve')
   }
 
   try {
@@ -103,72 +106,68 @@ async function WDIOServer(rawArgs, api, { baseUrl }) {
   }
 }
 
-async function WDIOPort(rawArgs) {
+async function handlePort(args, rawArgs) {
   const getPort = require('get-port')
 
-  if (rawArgs.indexOf('--port') === -1) {
-    try {
-      const port = await getPort() // find available port
+  if (args.port) return
 
-      process.env.VUE_CLI_WDIO_PORT = port
-      rawArgs.push('--port', port)
-    } catch (err) {
-      throw err
-    }
+  try {
+    const port = await getPort() // find available port
+
+    process.env.VUE_CLI_WDIO_PORT = port
+    rawArgs.push('--port', port)
+  } catch (err) {
+    throw err
   }
 }
 
-function WDIOMode(rawArgs, { headless, debug }) {
-  const headlessPos = rawArgs.indexOf('--headless')
-  const debugPos = rawArgs.indexOf('--debug')
-
-  if (headlessPos === -1) {
-    !headless &&
-      (process.env.VUE_CLI_WDIO_INTERACTIVE = ON) &&
-      (process.env.VUE_CLI_WDIO_HEADLESS = OFF)
-  } else {
+function handleHeadless(...args) {
+  switchMode('headless', ...args, () => {
     process.env.VUE_CLI_WDIO_HEADLESS = ON
     process.env.VUE_CLI_WDIO_INTERACTIVE = OFF
-    rawArgs.splice(headlessPos, 1)
-  }
-
-  if (debugPos === -1) {
-    debug && (process.env.VUE_CLI_WDIO_DEBUG = ON)
-  } else {
-    process.env.VUE_CLI_WDIO_DEBUG = ON
-    rawArgs.splice(debugPos, 1)
-  }
+  }, () => {
+    process.env.VUE_CLI_WDIO_HEADLESS = OFF
+    process.env.VUE_CLI_WDIO_INTERACTIVE = ON
+  })
 }
 
-function WDIOCapabilities(rawArgs, { capabilities }) {
-  const capabilitiesPos = rawArgs.indexOf('--capabilities')
+function handleDebug(...args) {
+  switchMode('debug', ...args,
+    () => (process.env.VUE_CLI_WDIO_DEBUG = ON),
+    () => (process.env.VUE_CLI_WDIO_DEBUG = OFF)
+  )
+}
 
-  if (capabilitiesPos === -1) {
+function handleCapabilities(args, rawArgs, { capabilities }) {
+  removeArg(rawArgs, 'capabilities')
+
+  if (args.capabilities) {
+    process.env.VUE_CLI_WDIO_CAPABILITIES = args.capabilities
+  } else {
     capabilities && (process.env.VUE_CLI_WDIO_CAPABILITIES = capabilities)
-  } else {
-    process.env.VUE_CLI_WDIO_CAPABILITIES = rawArgs.splice(capabilitiesPos, 2)[1]
   }
 }
 
-function WDIOSpecs(rawArgs, { specs }) {
-  const specsPos = rawArgs.indexOf('--specs')
+function handleSpecs(args, rawArgs, { specs }) {
+  removeArg(rawArgs, 'specs')
 
-  if (specsPos === -1) {
+  if (args.specs) {
+    process.env.VUE_CLI_WDIO_SPECS = args.specs
+  } else {
     specs && (process.env.VUE_CLI_WDIO_SPECS = specs)
-  } else {
-    process.env.VUE_CLI_WDIO_SPECS = rawArgs.splice(specsPos, 2)[1]
   }
 }
 
-function WDIOConfig(rawArgs, api, options) {
+function handleConfig(args, rawArgs, api, options) {
   const fs = require('fs')
-  const configPos = rawArgs.indexOf('--config')
-  let configPath, overridePath
+  let configPath
 
-  if (configPos === -1) {
-    options.config && (configPath = options.config)
+  removeArg(rawArgs, 'config')
+
+  if (args.config) {
+    configPath = args.config
   } else {
-    configPath = rawArgs.splice(configPos, 2)[1]
+    options.config && (configPath = options.config)
   }
 
   if (configPath && !fs.existsSync(configPath)) {
@@ -181,18 +180,37 @@ function WDIOConfig(rawArgs, api, options) {
     throw error
   }
 
-  if (fs.existsSync(overridePath = api.resolve(WDIO_CONFIG_OVERRIDE_PATH))) {
+  const overridePath = api.resolve(WDIO_CONFIG_OVERRIDE_PATH)
+  if (fs.existsSync(overridePath)) {
     // expose user overrides to config file
     process.env.VUE_CLI_WDIO_CONFIG_OVERRIDE_PATH = overridePath
   }
 
-  WDIOMode(rawArgs, options)
-  WDIOSpecs(rawArgs, options)
-  WDIOCapabilities(rawArgs, options)
+  handleHeadless(args, rawArgs, options)
+  handleDebug(args, rawArgs, options)
+  handleSpecs(args, rawArgs, options)
+  handleCapabilities(args, rawArgs, options)
 
   // Append config path to args
   process.env.VUE_CLI_WDIO_DEFAULT = configPath ? OFF : ON
   rawArgs.push(configPath || WDIO_CONFIG_DEFAULT_PATH)
+}
+
+function switchMode(option, args, rawArgs, options, on, off) {
+  removeArg(rawArgs, option, 0)
+  removeArg(rawArgs, `no-${option}`, 0)
+
+  switch (args[option]) {
+  case true:
+    on()
+    break
+  case false:
+    off()
+    break
+  case undefined:
+    options[option] ? on() : off()
+    break
+  }
 }
 
 function removeArg(rawArgs, arg, offset = 1) {
