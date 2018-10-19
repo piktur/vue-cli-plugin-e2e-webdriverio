@@ -83,15 +83,20 @@ function WDIOBinPath(api) {
   }
 }
 
-async function wdioServer(rawArgs, api) {
+async function WDIOServer(rawArgs, api, { baseUrl }) {
   const baseUrlPos = rawArgs.indexOf('--baseUrl')
-  const serverPromise = baseUrlPos === -1
-    ? api.service.run('serve')
-    : Promise.resolve({ url: rawArgs.splice(baseUrlPos, 2)[1] })
+  let serverPromise
+
+  if (baseUrlPos === -1) {
+    serverPromise = baseUrl ? Promise.resolve({ url: baseUrl }) : api.service.run('serve')
+  } else {
+    serverPromise = Promise.resolve({ url: rawArgs.splice(baseUrlPos, 2)[1] })
+  }
 
   try {
     const { server, url } = await serverPromise
     rawArgs.push('--baseUrl', url)
+
     return server
   } catch (err) {
     throw err
