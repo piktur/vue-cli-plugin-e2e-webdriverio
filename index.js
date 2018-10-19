@@ -53,19 +53,19 @@ module.exports = (api, options) => {
       WDIOConfig(rawArgs, api, pluginOptions)
       const runner = await execa(WDIOBinPath(api), rawArgs, { stdio: 'inherit' })
 
-    if (server) {
-      runner.on('exit', () => server.close())
-      runner.on('error', () => server.close())
-    }
+      if (server) {
+        runner.on('exit', () => server.close())
+        runner.on('error', () => server.close())
+      }
 
-    if (process.env.VUE_CLI_TEST) {
-      runner.on('exit', code => process.exit(code))
-    }
+      if (process.env.VUE_CLI_TEST) {
+        runner.on('exit', code => process.exit(code))
+      }
 
       return runner
     } catch (err) {
-    // WDIO launcher returns exit code 1 on failure consequently execa throws,
-    // catch to suppress unnecessary stdout pollution.
+      // WDIO launcher returns exit code 1 on failure consequently execa throws,
+      // catch to suppress unnecessary stdout pollution.
       console.log(err.message)
     }
   })
@@ -79,7 +79,7 @@ function WDIOBinPath(api) {
       return api.resolve('./node_modules/.bin/wdio')
     } else {
       throw err
-}
+    }
   }
 }
 
@@ -137,7 +137,7 @@ function WDIOMode(rawArgs, { headless, debug }) {
   } else {
     process.env.VUE_CLI_WDIO_DEBUG = ON
     rawArgs.splice(debugPos, 1)
-}
+  }
 }
 
 function WDIOCapabilities(rawArgs, { capabilities }) {
