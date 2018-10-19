@@ -15,7 +15,7 @@ module.exports = (api, options) => {
         'wdio-chromedriver-service': '^0.1.3',
         'wdio-mocha-framework': '^0.6.2',
         'wdio-spec-reporter': '^0.1.5',
-      }
+      },
     })
 
     api.hasPlugin('mocha') || api.extendPackage({
@@ -37,20 +37,20 @@ module.exports = (api, options) => {
 
   api.extendPackage({
     scripts: {
-      'test:e2e': 'vue-cli-service test:e2e'
+      'test:e2e': 'vue-cli-service test:e2e',
     },
     vue: {
       pluginOptions: {
         [PLUGIN_NAME]: options,
-      }
-    }
+      },
+    },
   })
 
   api.hasPlugin('eslint') && api.extendPackage({
     eslintConfig: {
       globals: {
-        browser: true
-      }
-    }
+        browser: true,
+      },
+    },
   })
 }
