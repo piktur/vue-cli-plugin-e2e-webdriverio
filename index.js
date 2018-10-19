@@ -195,7 +195,7 @@ function WDIOConfig(rawArgs, api, options) {
   rawArgs.push(configPath || WDIO_CONFIG_DEFAULT_PATH)
 }
 
-function removeArg (rawArgs, arg, offset = 1) {
+function removeArg(rawArgs, arg, offset = 1) {
   const matchRE = new RegExp(`^--${arg}`)
   const equalRE = new RegExp(`^--${arg}=`)
   const i = rawArgs.findIndex(arg => matchRE.test(arg))
