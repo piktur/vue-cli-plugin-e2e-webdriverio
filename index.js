@@ -36,25 +36,22 @@ module.exports = (api, options) => {
     },
     details: en.details,
   }, async (args, rawArgs) => {
-    const { logger } = require('@vue/cli-shared-utils')
-    let server
-
-    try {
-      server = await wdioServer(rawArgs, api)
-      await wdioPort(rawArgs)
-    } catch (err) {
-      logger.error(err)
-    }
+    const { execa } = require('@vue/cli-shared-utils')
+    const pluginOptions = options.pluginOptions[PLUGIN_NAME] || {}
 
     process.env.VUE_CONTEXT = api.resolve('./')
 
-    wdioCapabilities(rawArgs)
-    wdioMode(rawArgs)
-    wdioConfig(rawArgs, api.resolve('wdio.conf.js'))
+    let server
+    try {
+      server = await WDIOServer(rawArgs, api, pluginOptions)
+      await WDIOPort(rawArgs)
+    } catch (err) {
+      console.error(err)
+    }
 
-    const { execa } = require('@vue/cli-shared-utils')
-    const wdioBinPath = require.resolve('webdriverio/bin/wdio')
-    const runner = execa(wdioBinPath, rawArgs, { stdio: 'inherit' })
+    try {
+      WDIOConfig(rawArgs, api, pluginOptions)
+      const runner = await execa(WDIOBinPath(api), rawArgs, { stdio: 'inherit' })
 
     if (server) {
       runner.on('exit', () => server.close())
@@ -65,9 +62,12 @@ module.exports = (api, options) => {
       runner.on('exit', code => process.exit(code))
     }
 
+      return runner
+    } catch (err) {
     // WDIO launcher returns exit code 1 on failure consequently execa throws,
     // catch to suppress unnecessary stdout pollution.
-    return runner.catch(err => null)
+      console.log(err.message)
+    }
   })
 }
 
