@@ -1,4 +1,13 @@
 
+module.exports.defaultModes = {
+  // @note Command `vue-cli-service serve` is issued if option `baseUrl` undefined. The command
+  // starts the "development" server in the mode specified here. Default Vue CLI configuration
+  // enables Webpack HMR in `development` mode only. If mode set to anything other than `production`
+  // or `development` the app will not render as it is unable to connect to the HMR socket.
+  //
+  // @see https://cli.vuejs.org/guide/mode-and-env.html#modes
+  'test:e2e': 'production',
+}
 
 module.exports.WDIOConfigDefault = () => require('./wdio.conf.default.js')
 module.exports.capabilities = () => require('./lib/capabilities')
