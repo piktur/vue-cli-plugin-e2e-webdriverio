@@ -103,12 +103,15 @@ async function WDIOServer(rawArgs, api, { baseUrl }) {
   }
 }
 
-async function wdioPort(rawArgs) {
+async function WDIOPort(rawArgs) {
   const getPort = require('get-port')
 
   if (rawArgs.indexOf('--port') === -1) {
     try {
-      rawArgs.push('--port', await getPort()) // find available port
+      const port = await getPort() // find available port
+
+      process.env.VUE_CLI_WDIO_PORT = port
+      rawArgs.push('--port', port)
     } catch (err) {
       throw err
     }
