@@ -1,16 +1,19 @@
+
+const en = require('./locales/en.json').io.piktur['vue-cli-plugin-e2e-webdriverio'].tasks.test
+
 module.exports = (api, options) => {
   api.registerCommand('test:e2e', {
-    description: 'run e2e tests with webdriverio',
-    usage: 'vue-cli-service test:e2e [options]',
+    description: en.description,
+    usage: en.usage,
     options: {
-      '-b, --baseUrl': 'run e2e tests against given url instead of auto-starting dev server',
-      '--config': 'use custom webdriver config file (overrides internals)',
-      '--headless': 'run e2e tests in headless mode without GUI',
-      '--capabilities': 'specify comma-delimited browser capabilities to run in (default: phablet,mobile)',
+      '-b, --baseUrl': en.baseUrl,
+      '--capabilities': en.capabilities,
+      '--config': en.config,
+      '--debug, --no-debug': en.debug,
+      '--headless, --no-headless': en.headless,
+      '--specs': en.specs,
     },
-    details:
-      `All WebdriverIO CLI options are also supported.\n` +
-      `http://webdriver.io/guide/testrunner/gettingstarted.html`
+    details: en.details,
   }, async (args, rawArgs) => {
     const { logger } = require('@vue/cli-shared-utils')
     let server
