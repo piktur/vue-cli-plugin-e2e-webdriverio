@@ -160,24 +160,39 @@ function WDIOSpecs(rawArgs, { specs }) {
   }
 }
 
-function wdioConfig(rawArgs, overridePath) {
+function WDIOConfig(rawArgs, api, options) {
   const fs = require('fs')
-  const path = require('path')
-
-  const defaultPath = path.resolve(__dirname, './wdio.conf.debug.js')
-  let configPath
-
   const configPos = rawArgs.indexOf('--config')
-  if (configPos !== -1) {
+  let configPath, overridePath
+
+  if (configPos === -1) {
+    options.config && (configPath = options.config)
+  } else {
     configPath = rawArgs.splice(configPos, 2)[1]
   }
 
-  rawArgs.push(fs.existsSync(configPath) ? configPath : defaultPath)
+  if (configPath && !fs.existsSync(configPath)) {
+    const error = new Error()
+    error.code = 'ENOENT'
+    error.message = `The nominated config path: ${configPath} does not exist.\n` +
+    `Run \`${WDIOBinPath(api)}\` to generate the file or,\n` +
+    `run command \`${en.usage}\` without option \`--config\` to use plugin defaults.`
 
-  if (fs.existsSync(overridePath)) {
-    // expose user overrides to config file
-    process.env.WDIO_CONFIG_OVERRIDE_PATH = overridePath
+    throw error
   }
+
+  if (fs.existsSync(overridePath = api.resolve(WDIO_CONFIG_OVERRIDE_PATH))) {
+    // expose user overrides to config file
+    process.env.VUE_CLI_WDIO_CONFIG_OVERRIDE_PATH = overridePath
+  }
+
+  WDIOMode(rawArgs, options)
+  WDIOSpecs(rawArgs, options)
+  WDIOCapabilities(rawArgs, options)
+
+  // Append config path to args
+  process.env.VUE_CLI_WDIO_DEFAULT = configPath ? OFF : ON
+  rawArgs.push(configPath || WDIO_CONFIG_DEFAULT_PATH)
 }
 
 function removeArg (rawArgs, arg, offset = 1) {
