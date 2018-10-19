@@ -150,10 +150,13 @@ function WDIOCapabilities(rawArgs, { capabilities }) {
   }
 }
 
-  if (process.env.MOBILE_ONLY) {
-    process.env.WDIO_CAPABILITIES = 'mobile'
-  } else if (process.env.PHABLET_ONLY) {
-    process.env.WDIO_CAPABILITIES = 'phablet'
+function WDIOSpecs(rawArgs, { specs }) {
+  const specsPos = rawArgs.indexOf('--specs')
+
+  if (specsPos === -1) {
+    specs && (process.env.VUE_CLI_WDIO_SPECS = specs)
+  } else {
+    process.env.VUE_CLI_WDIO_SPECS = rawArgs.splice(specsPos, 2)[1]
   }
 }
 
