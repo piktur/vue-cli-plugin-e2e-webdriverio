@@ -140,13 +140,15 @@ function WDIOMode(rawArgs, { headless, debug }) {
 }
 }
 
-function wdioCapabilities(rawArgs) {
+function WDIOCapabilities(rawArgs, { capabilities }) {
   const capabilitiesPos = rawArgs.indexOf('--capabilities')
+
   if (capabilitiesPos === -1) {
-    process.env.WDIO_CAPABILITIES = 'phablet,mobile'
+    capabilities && (process.env.VUE_CLI_WDIO_CAPABILITIES = capabilities)
   } else {
-    process.env.WDIO_CAPABILITIES = rawArgs.splice(capabilitiesPos, 2)
+    process.env.VUE_CLI_WDIO_CAPABILITIES = rawArgs.splice(capabilitiesPos, 2)[1]
   }
+}
 
   if (process.env.MOBILE_ONLY) {
     process.env.WDIO_CAPABILITIES = 'mobile'
