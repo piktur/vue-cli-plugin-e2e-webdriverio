@@ -71,9 +71,16 @@ module.exports = (api, options) => {
   })
 }
 
-module.exports.defaultModes = {
-  // @note If test, specs fail due to broken Webpack HMR server connection
-  'test:e2e': 'production'
+function WDIOBinPath(api) {
+  try {
+    return api.resolve('./node_modules/webdriverio/bin/wdio')
+  } catch (err) {
+    if (err.code === 'MODULE_NOT_FOUND') {
+      return api.resolve('./node_modules/.bin/wdio')
+    } else {
+      throw err
+}
+  }
 }
 
 async function wdioServer(rawArgs, api) {
