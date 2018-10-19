@@ -1,23 +1,20 @@
 const path = require('path')
+const capabilities = require('./lib/capabilities').get(process.env.VUE_CLI_WDIO_CAPABILITIES)
 
 // @see http://webdriver.io/guide/testrunner/configurationfile.html
-exports.config = {
-  specs: [path.resolve(process.env.PWD, 'test/specs/*.js')],
+module.exports.config = {
+  specs: [path.resolve(process.env.VUE_CONTEXT, process.env.VUE_CLI_WDIO_SPECS)],
   exclude: [],
+  path: '/wd/hub', // must be absolute
+  capabilities,
+  maxInstances: 1,
   sync: true,
-  logLevel: 'silent',
+  logLevel: 'verbose',
   coloredLogs: true,
+  deprecationWarnings: false,
   waitforTimeout: 20000,
   waitforInterval: 100,
   connectionRetryTimeout: 90000,
   connectionRetryCount: 3,
-  framework: 'mocha',
-  reporters: ['spec'],
-  deprecationWarnings: false,
-  mochaOpts: {
-    ui: 'bdd',
-    timeout: 120000,
-    bail: true, // abort suite if any test fails
-  },
   bail: 1, // abort if any suite fails
 }
