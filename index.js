@@ -1,3 +1,10 @@
+const {
+  PLUGIN_NAME,
+  WDIO_CONFIG_DEFAULT_PATH,
+  WDIO_CONFIG_OVERRIDE_PATH,
+  ON,
+  OFF,
+} = require('./lib/constants')
 
 module.exports.defaultModes = {
   // @note Command `vue-cli-service serve` is issued if option `baseUrl` undefined. The command
