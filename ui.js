@@ -46,6 +46,11 @@ module.exports = (api, options) => {
         type: 'confirm',
         default: pluginOptions[name] || false,
         description: `${namespace}.${name}`,
+      }, {
+        name: name = 'wdioCLI',
+        type: 'input',
+        default: undefined,
+        description: `${namespace}.${name}`,
       },
     ],
     onBeforeRun: ({ answers, args }) => {
@@ -55,6 +60,7 @@ module.exports = (api, options) => {
       if (answers.capabilities) args.push('--capabilities', answers.capabilities)
       answers.headless ? args.push('--headless') : args.push('--no-headless')
       answers.debug ? args.push('--debug') : args.push('--no-debug')
+      if (answers.wdioCLI) args.push(answers.wdioCLI.split(' '))
     },
   })
 }
