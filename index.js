@@ -1,4 +1,9 @@
 
+
+module.exports.WDIOConfigDefault = () => require('./wdio.conf.default.js')
+module.exports.capabilities = () => require('./lib/capabilities')
+module.exports.util = () => require('./lib/util')
+
 const en = require('./locales/en.json').io.piktur['vue-cli-plugin-e2e-webdriverio'].tasks.test
 
 module.exports = (api, options) => {
