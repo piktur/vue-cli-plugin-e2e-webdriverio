@@ -6,20 +6,6 @@ const {
   OFF,
 } = require('./lib/constants')
 
-module.exports.defaultModes = {
-  // @note Command `vue-cli-service serve` is issued if option `baseUrl` undefined. The command
-  // starts the "development" server in the mode specified here. Default Vue CLI configuration
-  // enables Webpack HMR in `development` mode only. If mode set to anything other than `production`
-  // or `development` the app will not render as it is unable to connect to the HMR socket.
-  //
-  // @see https://cli.vuejs.org/guide/mode-and-env.html#modes
-  'test:e2e': 'production',
-}
-
-module.exports.WDIOConfigDefault = () => require('./wdio.conf.default.js')
-module.exports.capabilities = () => require('./lib/capabilities')
-module.exports.util = () => require('./lib/util')
-
 const en = require('./locales/en.json').io.piktur['vue-cli-plugin-e2e-webdriverio'].tasks.test
 
 module.exports = (api, options) => {
@@ -83,6 +69,19 @@ function WDIOBinPath(api) {
       throw err
     }
   }
+}
+
+module.exports.WDIOConfigDefault = () => require('./wdio.conf.default.js')
+module.exports.capabilities = () => require('./lib/capabilities')
+module.exports.util = () => require('./lib/util')
+module.exports.defaultModes = {
+  // @note Command `vue-cli-service serve` is issued if option `baseUrl` undefined. The command
+  // starts the "development" server in the mode specified here. Default Vue CLI configuration
+  // enables Webpack HMR in `development` mode only. If mode set to anything other than `production`
+  // or `development` the app will not render as it is unable to connect to the HMR socket.
+  //
+  // @see https://cli.vuejs.org/guide/mode-and-env.html#modes
+  'test:e2e': 'production',
 }
 
 async function handleBaseUrl(args, rawArgs, api, { baseUrl }) {
@@ -160,6 +159,7 @@ function handleSpecs(args, rawArgs, { specs }) {
 
 function handleConfig(args, rawArgs, api, options) {
   const fs = require('fs')
+  const path = require('path')
   let configPath
 
   removeArg(rawArgs, 'config')
@@ -168,6 +168,10 @@ function handleConfig(args, rawArgs, api, options) {
     configPath = args.config
   } else {
     options.config && (configPath = options.config)
+  }
+
+  if (configPath && !path.isAbsolute(configPath)) {
+    configPath = api.resolve(configPath)
   }
 
   if (configPath && !fs.existsSync(configPath)) {
@@ -221,4 +225,17 @@ function removeArg(rawArgs, arg, offset = 1) {
   if (i > -1) {
     rawArgs.splice(i, offset + (equalRE.test(rawArgs[i]) ? 0 : 1))
   }
+}
+
+if (process.env.VUE_CLI_TEST) {
+  Object.assign(module.exports, {
+    WDIOBinPath,
+    handleBaseUrl,
+    handlePort,
+    handleHeadless,
+    handleDebug,
+    handleCapabilities,
+    handleSpecs,
+    handleConfig,
+  })
 }
