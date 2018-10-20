@@ -37,8 +37,6 @@ module.exports = (api, options) => {
 
     try {
       handleConfig(args, rawArgs, api, pluginOptions)
-      console.log(rawArgs)
-      console.log(args)
       const runner = await execa(WDIOBinPath(api), rawArgs, { stdio: 'inherit' })
 
       if (server) {
