@@ -1,4 +1,6 @@
-module.exports = (api) => {
+/* eslint-disable no-return-assign */
+
+module.exports = (pkg) => {
   const en = require('./locales/en.json').io.piktur['vue-cli-plugin-e2e-webdriverio'].tasks.test
   const {
     DEFAULT_BASE_URL,
@@ -6,6 +8,7 @@ module.exports = (api) => {
     DEFAULT_SPECS,
   } = require('./lib/constants')
   const { capabilityNames } = require('./lib/capabilities')
+  let name
 
   return [
     {
