@@ -4,4 +4,3 @@ node_modules
 dist
 temp
 yarn-error.log
-yarn.lock
