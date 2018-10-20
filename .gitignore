@@ -1,4 +1,5 @@
-__mocks__/dummy
+__mocks__/
+dummy
 node_modules
 .DS_Store
 dist
