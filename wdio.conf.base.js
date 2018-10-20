@@ -4,7 +4,7 @@ const { isInteractive, resizeViewport } = require('./lib/util')
 
 // @see http://webdriver.io/guide/testrunner/configurationfile.html
 const config = {
-  specs: [path.resolve(process.env.VUE_CONTEXT, process.env.VUE_CLI_WDIO_SPECS)],
+  specs: specs(),
   exclude: [],
   path: '/wd/hub', // must be absolute
   capabilities,
@@ -18,6 +18,14 @@ const config = {
   connectionRetryTimeout: 90000,
   connectionRetryCount: 3,
   bail: 1, // abort if any suite fails
+}
+
+function specs() {
+  if (('VUE_CONTEXT', 'VUE_CLI_WDIO_SPECS') in process.env) {
+    return [path.resolve(process.env.VUE_CONTEXT, process.env.VUE_CLI_WDIO_SPECS)]
+  } else {
+    return []
+  }
 }
 
 function beforeSuite(suite) {
