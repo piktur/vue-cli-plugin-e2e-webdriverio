@@ -10,7 +10,7 @@ const config = {
   capabilities,
   maxInstances: 1,
   sync: true,
-  logLevel: 'verbose',
+  logLevel: 'silent',
   coloredLogs: true,
   deprecationWarnings: false,
   waitforTimeout: 20000,
