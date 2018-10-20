@@ -5,8 +5,7 @@ const {
   ON,
   OFF,
 } = require('./lib/constants')
-
-const en = require('./locales/en.json').io.piktur['vue-cli-plugin-e2e-webdriverio'].tasks.test
+const en = require('./locales/en.json').io.piktur[PLUGIN_NAME].tasks.test
 
 module.exports = (api, options) => {
   api.registerCommand('test:e2e', {
@@ -52,7 +51,7 @@ module.exports = (api, options) => {
     } catch (err) {
       // WDIO launcher returns exit code 1 on failure consequently execa throws,
       // catch to suppress unnecessary stdout pollution.
-      console.log(err.message)
+      console.error(err.message)
     }
   })
 }
@@ -203,15 +202,9 @@ function switchMode(option, args, rawArgs, options, on, off) {
   removeArg(rawArgs, `no-${option}`, 0)
 
   switch (args[option]) {
-  case true:
-    on()
-    break
-  case false:
-    off()
-    break
-  case undefined:
-    options[option] ? on() : off()
-    break
+  case true: return on()
+  case false: return off()
+  case undefined: return options[option] ? on() : off()
   }
 }
 

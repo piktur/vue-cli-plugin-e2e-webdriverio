@@ -1,4 +1,3 @@
-const fs = require('fs')
 const os = require('os')
 const plugin = require('../index.js')
 const { isHeadless, isDebug, isInteractive } = require('../lib/util')

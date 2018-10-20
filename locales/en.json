@@ -4,13 +4,13 @@
       "vue-cli-plugin-e2e-webdriverio": {
         "tasks": {
           "test": {
-            "baseUrl": "Run e2e tests against given url instead of auto-starting dev server",
-            "capabilities": "Specify comma-delimited browser capabilities to run",
-            "config": "Use your own WebdriverIO configuration (overrides plugin defaults)",
+            "baseUrl": "Run e2e tests against dev server running at given url. Auto starts dev server if absent.",
+            "capabilities": "Specify browser capabilities to run (default: desktop)",
+            "config": "Use your own WebdriverIO configuration; overrides plugin defaults (relative to <projectRoot>)",
             "debug": "Enable Node inspector and debugging tools",
             "description": "Run e2e tests with WebdriverIO",
             "details": "All WebdriverIO CLI options are supported.\nhttp://webdriver.io/guide/testrunner/gettingstarted.html",
-            "headless": "Run e2e tests in headless mode without GUI (compatible with default chrome capability)",
+            "headless": "Run e2e tests in headless mode without GUI (default capabilities only)",
             "specs": "Glob pattern determines specs to run (relative to <projectRoot>)",
             "usage": "vue-cli-service test:e2e [options]",
             "wdioCLI": "Additional WebdriverIO CLI options"

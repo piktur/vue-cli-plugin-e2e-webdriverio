@@ -4,18 +4,28 @@
 
 ## Injected Commands
 
-Run e2e tests with [WebdriverIO](http://webdriver.io/) `yarn run test:e2e [options]`
-
-Options:
+Run e2e tests with [WebdriverIO](http://webdriver.io/)
 
 ```sh
 
-  -b, --baseUrl             Run e2e tests against given url instead of auto-starting dev server
-  --capabilities            Specify comma-delimited browser capabilities to run (default: chrome)
-  --config                  Use your own WebdriverIO configuration (overrides plugin defaults)
-  --headless, --no-headless Run e2e tests in headless mode without GUI (compatible with default chrome capability)
-  --debug, --no-debug       Enable Node inspector and debugging tools
-  --specs                   Glob pattern determines specs to run (relative to <projectRoot>)
+  Usage:
+    yarn run test:e2e [options]
+    yarn run test:e2e
+      --baseUrl http://localhost:8080
+      --capabilities desktop,iphone
+      --specs spec/**
+      --headless
+      --debug
+    yarn run test:e2e --config wdio.conf.js
+    yarn run test:e2e --suite focus --bail 1
+
+  Options:
+    -b, --baseUrl [STRING<URI>]      Run e2e tests against dev server running at given url. Auto starts dev server if absent.
+    --capabilities [STRING[,STRING]] Specify browser capabilities to run (default: desktop)
+    --config [STRING<PATH>]          Use your own WebdriverIO configuration; overrides plugin defaults (relative to <projectRoot>)
+    --headless, --no-headless        Run e2e tests in headless mode without GUI (default capabilities only)
+    --debug, --no-debug              Enable Node inspector and debugging tools
+    --specs [STRING[,STRING]]        Glob pattern determines specs to run (relative to <projectRoot>)
 
 ```
 

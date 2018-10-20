@@ -7,7 +7,7 @@ const {
 const { capabilityNames } = require('./lib/capabilities')
 
 module.exports = (api) => {
-  const namespace = 'io.piktur.vue-cli-plugin-e2e-webdriverio.tasks.test'
+  const namespace = `io.piktur.${PLUGIN_NAME}.tasks.test`
   let name
   let pluginOptions
 
@@ -21,7 +21,7 @@ module.exports = (api) => {
   api.describeTask({
     match: /vue-cli-service test:e2e/,
     description: `${namespace}.description`,
-    link: 'https://github.com/piktur/vue-cli-plugin-e2e-webdriverio#injected-commands',
+    link: `https://github.com/piktur/${PLUGIN_NAME}#injected-commands`,
     prompts: [
       {
         name: name = 'config',

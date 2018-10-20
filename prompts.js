@@ -1,13 +1,15 @@
 /* eslint-disable no-return-assign */
 
+const {
+  PLUGIN_NAME,
+  DEFAULT_BASE_URL,
+  DEFAULT_CAPABILITIES,
+  DEFAULT_SPECS,
+} = require('./lib/constants')
+const en = require('./locales/en.json').io.piktur[PLUGIN_NAME].tasks.test
+const { capabilityNames } = require('./lib/capabilities')
+
 module.exports = (pkg) => {
-  const en = require('./locales/en.json').io.piktur['vue-cli-plugin-e2e-webdriverio'].tasks.test
-  const {
-    DEFAULT_BASE_URL,
-    DEFAULT_CAPABILITIES,
-    DEFAULT_SPECS,
-  } = require('./lib/constants')
-  const { capabilityNames } = require('./lib/capabilities')
   let name
 
   return [
@@ -38,7 +40,7 @@ module.exports = (pkg) => {
       type: 'confirm',
       default: false,
       message: en[name],
-      when: ({ config }) => config === '',
+      // when: ({ config }) => config === '',
     }, {
       name: name = 'debug',
       type: 'confirm',

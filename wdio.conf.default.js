@@ -4,8 +4,8 @@ const { isDefault } = require('./lib/util')
 
 config = module.exports.config = {
   ...config,
-  chromeDriverArgs: chromeDriverArgs(),
   protocol: 'http',
+  chromeDriverArgs: chromeDriverArgs(),
   services: ['chromedriver'],
   reporters: ['spec'],
   framework: 'mocha',
