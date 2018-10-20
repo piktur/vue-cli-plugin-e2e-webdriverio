@@ -1,8 +1,6 @@
 const { PLUGIN_NAME } = require('../lib/constants')
 
 module.exports = (api, options) => {
-  (options.config === '') && (options.config = undefined)
-
   // Don't laden the host project with erroneous dependencies. If the user prefers their
   // own configuration, they can keep their configuration. In this case we make no assumptions
   // about the testing framework, assertions/mocking libraries and WebdriverIO plugins; the user
