@@ -26,9 +26,11 @@ By default, tests are run in **interactive** mode, to run in **headless** mode (
 Defaults defined on *plugin invokation* will be stored in `vue.config.js`.
 Defaults will be overriden by command line options on *command invokation*.
 
+The *task* may also be run via `vue ui`.
+
 ## Configuration
 
-This plugin uses the **Chrome driver** by default. If you wish to run e2e tests with additional *capabilities*, define configuration within `<projectRoot>/wdio.conf.js`.
+This plugin provides a number of `WebdriverIO` *capabilities* each utilising [`ChromeDriver`](http://chromedriver.chromium.org/). If you wish to run e2e tests with different *capabilities*, define them within `<projectRoot>/wdio.conf.js`.
 Settings defined at this path will be **merged** with the plugin's defaults.
 
 If no alternate `--config` defined the plugin will install and configure:
@@ -41,11 +43,19 @@ To **override internal configuration entirely** use option `--config` to specify
 In this case, the plugin makes no assumptions; **installation and configuration of framework dependencies will be your responsibility**;
 if you haven't already, run `./node_modules/.bin/wdio` to configure `WebdriverIO`.
 
-The plugin's internal `WebdriverIO` configuration is exported as `baseConfig`, utility methods, as `util`:
+The plugin's:
+* internal `WebdriverIO` configuration is exported as `WDIOConfigDefault`
+* `util`s:
+  - `resizeViewport()`
+  - `saveScreenshot(test)`
+  - `printBrowserConsole()`
+* and a set of generic `capabilities`:
+  - `desktop`
+  - `iphone`
+  - `ipad`
+  - `android`
 
-* `resizeViewport()`
-* `saveScreenshot(test)`
-* `printBrowserConsole()`
+You may use these within your own configuration.
 
 Selenium commands will be executed **synchronously** by default. To override:
 
@@ -57,7 +67,7 @@ Selenium commands will be executed **synchronously** by default. To override:
   }
 ```
 
-`WebdriverIO` hooks defined in `<projectRoot>/wdio.conf.js` will be appended to behaviour provided by plugin defaults.
+`WebdriverIO` hooks defined in `<projectRoot>/wdio.conf.js` will be appended to behaviour provided by plugin defaults unless run with alternate `--config`.
 
 ```js
   // wdio.conf.js
