@@ -127,14 +127,15 @@ module.exports = {
 
   // The glob patterns Jest uses to detect test files
   testMatch: [
-    '**/__tests__/**/(?!setup|*).js',
+    '**/__tests__/**/*.js',
     '**/?(*.)+(spec|test).js',
   ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   testPathIgnorePatterns: [
     '/node_modules/',
-    '__mocks__',
+    'dummy',
+    '__tests__/setup.js',
   ],
 
   // The regexp pattern Jest uses to detect test files
