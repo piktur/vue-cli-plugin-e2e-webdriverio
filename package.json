@@ -22,7 +22,8 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:build": "node scripts/test/build --path $PWD"
   },
   "dependencies": {
     "@vue/cli-shared-utils": "^3.0.5",
