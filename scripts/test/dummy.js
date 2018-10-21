@@ -11,35 +11,20 @@ const pluginRoot = path.resolve(process.env.PWD)
 const projectName = 'dummy'
 const projectRoot = path.join(args.path || pluginRoot, projectName)
 const pluginOptions = {
-  baseUrl: 'http://localhost:8080',
+  baseUrl: undefined,
   capabilities: ['desktop'],
   config: 'wdio.conf.js',
   debug: true,
   headless: true,
   specs: 'specs/**/*',
-};
+}
 
-(async () => {
-  try {
-    await fs.ensureDir(path.dirname(projectRoot))
-
-    const project = await create(projectName, {
-      plugins: {
-        [pluginName]: {
-          version: `file:${pluginRoot}`,
-          ...pluginOptions,
-        },
-      },
-    }, path.dirname(projectRoot))
-
-    await project.write('wdio.conf.js',
-`module.exports = {
+const WDIOCOnfigOverrideTemplate = `module.exports = {
   override: true,
   specs: ['spec/**/*.js'],
-}`)
+}`
 
-    await project.write('spec/dummy.spec.js',
-`const { assert } = require('chai')
+const specTemplate = `const { assert } = require('chai')
 
 describe('an assertion', function() {
   it('runs', () => {
@@ -49,40 +34,57 @@ describe('an assertion', function() {
 
     assert.ok(app.isVisible())
   })
-})`)
+})`;
 
-    let options = {} // { stdout: 'inherit' }
-    let yarnBinPath, vueBinPath, vueCLIServiceBinPath
+(async () => {
+  try {
+    const yarnBinPath = execa.sync('/usr/bin/which', ['yarn']).stdout
 
-    try {
-      const result = await execa('/usr/bin/which', ['yarn'], options)
-      yarnBinPath = result.stdout
-    } catch (err) {
-      console.error(err.message)
+    if (!fs.existsSync(projectRoot)) {
+      const [, project] = await Promise.all([
+        fs.ensureDir(path.dirname(projectRoot)),
+        createProject(),
+      ])
+
+      let vueBinPath
+      try {
+        vueBinPath = execa.sync('/usr/bin/which', ['vue']).stdout
+
+        execa.sync(yarnBinPath, ['link'], { stdio: 'inherit', cwd: pluginRoot })
+
+        process.chdir(projectRoot)
+        execa.sync(yarnBinPath, ['install'], { stdio: 'inherit' })
+        execa.sync(vueBinPath, ['invoke', pluginName], { stdio: 'inherit' })
+        execa.sync(yarnBinPath, ['link', pluginName], { stdio: 'inherit' })
+      } catch (err) {
+        console.error(err.message)
+        process.exit(1)
+      }
+
+      await Promise.all([
+        project.write('wdio.conf.js', WDIOCOnfigOverrideTemplate),
+        project.write('spec/dummy.spec.js', specTemplate),
+      ])
+    } else {
+      process.chdir(projectRoot)
     }
 
-    try {
-      const result = await execa('/usr/bin/which', ['vue'], options)
-      vueBinPath = result.stdout
-    } catch (err) {
-      console.error(err.message)
-    }
-
-    try {
-      const result = await execa('/usr/bin/which', ['vue-cli-service'], options)
-      vueCLIServiceBinPath = result.stdout
-    } catch (err) {
-      console.error(err.message)
-    }
-
-    options = { stdio: 'inherit', cwd: projectRoot }
-    await execa(yarnBinPath, ['link'], { stdio: 'inherit', cwd: pluginRoot })
-    await execa(yarnBinPath, ['install'], options)
-    await execa(vueBinPath, ['invoke', pluginName], options)
-    await execa(yarnBinPath, ['link', pluginName], options)
-
-    // await execa(vueCLIServiceBinPath, ['test:e2e', '--spec', 'spec/dummy.spec.js'], options)
+    execa.sync(yarnBinPath, ['test:e2e', '--spec', 'spec/dummy.spec.js', '--headless'], { stdio: 'inherit' })
   } catch (err) {
     console.error(err)
+    process.exit(1)
   }
 })()
+
+async function createProject() {
+  const project = await create(projectName, {
+    plugins: {
+      [pluginName]: {
+        version: `file:${pluginRoot}`,
+        ...pluginOptions,
+      },
+    },
+  }, path.dirname(projectRoot), false /* no Git */)
+
+  return project
+}
