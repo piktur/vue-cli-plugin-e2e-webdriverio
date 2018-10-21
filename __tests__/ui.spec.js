@@ -10,7 +10,7 @@ test('has prompts with defaults', () => {
   expect(prompts).toBeInstanceOf(Array)
   expect(configQ.default).toBeUndefined
   expect(specsQ.default).toEqual('test/spec/**')
-  expect(baseUrlQ.default).toEqual('http://localhost:8080')
+  expect(baseUrlQ.default).toBeUndefined
   expect(capabilitiesQ.default).toEqual('desktop')
   expect(headlessQ.default).toBeFalsey
   expect(debugQ.default).toBeFalsey
