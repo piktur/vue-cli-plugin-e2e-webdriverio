@@ -55,7 +55,7 @@ if you haven't already, run `./node_modules/.bin/wdio` to configure `WebdriverIO
 
 This plugin provides a number of `WebdriverIO` *capabilities* each utilising [`ChromeDriver`](http://chromedriver.chromium.org/). If you wish to run e2e tests with different *capabilities*, define them within `<projectRoot>/wdio.conf.js`.
 
-When using `--capabilities` to run specs against a subset of devices, you must first [`registerCapability`](#capabilitiesregistercapability) within `<projectRoot>/wdio.conf.js`.
+When using `--capabilities` to run specs against a subset of devices, you must first [`registerCapability`](#capabilitiesregistercapabilityname-string-capability-object) within `<projectRoot>/wdio.conf.js`.
 
 ```js
   // wdio.conf.js
