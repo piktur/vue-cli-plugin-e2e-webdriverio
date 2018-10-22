@@ -1,13 +1,11 @@
 const path = require('path')
-const capabilities = require('./lib/capabilities').get(process.env.VUE_CLI_WDIO_CAPABILITIES)
 const { isInteractive, resizeViewport } = require('./lib/util')
 
 // @see http://webdriver.io/guide/testrunner/configurationfile.html
-const config = {
+module.exports.config = {
   specs: specs(),
   exclude: [],
   path: '/wd/hub', // must be absolute
-  capabilities,
   maxInstances: 1,
   sync: true,
   logLevel: 'silent',
@@ -32,4 +30,6 @@ function beforeSuite(suite) {
   if (isInteractive()) resizeViewport()
 }
 
-module.exports = { config, hooks: [beforeSuite] }
+module.exports.hooks = [
+  beforeSuite,
+]

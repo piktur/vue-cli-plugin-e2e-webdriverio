@@ -1,19 +1,32 @@
 const { Chrome, chromeDriverArgs } = require('../lib/capabilities/Chrome')
-const { get } = require('../lib/capabilities')
+const { get, registerCapability } = require('../lib/capabilities')
 
 test('should expose predefined capabilities', () => {
   const capabilities = require('../lib/capabilities')
-  const names = capabilities.capabilityNames
 
-  names.forEach((name) => expect(name in capabilities))
+  capabilities.names().forEach((name) => expect(name in capabilities))
 })
 
 describe('get(String | String[])', () => {
-  test('returns predefined capabilities', () => {
+  test('returns an Array of predefined capabilities', () => {
     expect(get('desktop,iphone')).toHaveLength(2)
     expect(get(['desktop'])).toHaveLength(1)
     expect(get('desktop')[0]).toBeInstanceOf(Chrome)
     expect(get('nothing')).toHaveLength(0)
+  })
+})
+
+describe('registerCapability(String, Object | Function)', () => {
+  const obj = { deviceType: 'primitive' }
+  const fn = () => obj
+
+  beforeEach(() => {
+    registerCapability('flint', obj)
+    registerCapability('iron', fn)
+  })
+
+  test('adds capability to container', () => {
+    expect(get('flint,iron')).toContain(obj, obj)
   })
 })
 

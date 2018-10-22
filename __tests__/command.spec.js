@@ -1,6 +1,10 @@
 const os = require('os')
+const fs = require('fs-extra')
+const path = require('path')
+const pluginRoot = path.resolve(__dirname, '..')
 const plugin = require('../index.js')
 const { isHeadless, isDebug, isInteractive } = require('../lib/util')
+const { WDIO_CONFIG_OVERRIDE_PATH, WDIO_CONFIG_DEFAULT_PATH } = require('../lib/constants')
 
 describe('exports', () => {
   test('exposes default config, capabilities and util', () => {
@@ -244,7 +248,7 @@ describe('handleCapabilities()', () => {
 
       fn(args, rawArgs, options)
 
-      const { capabilities } = require('../wdio.conf.default').config
+      const { capabilities } = require(WDIO_CONFIG_DEFAULT_PATH).config
 
       expect(rawArgs).not.toContain('--capabilities')
       expect(capabilities).toHaveLength(2)
@@ -259,7 +263,7 @@ describe('handleCapabilities()', () => {
 
       fn(args, rawArgs, options)
 
-      const { capabilities } = require('../wdio.conf.default').config
+      const { capabilities } = require(WDIO_CONFIG_DEFAULT_PATH).config
 
       expect(capabilities[0].deviceType).toEqual('desktop')
     })
@@ -273,7 +277,7 @@ describe('handleCapabilities()', () => {
 
       fn(args, rawArgs, options)
 
-      const { capabilities } = require('../wdio.conf.default').config
+      const { capabilities } = require(WDIO_CONFIG_DEFAULT_PATH).config
 
       expect(capabilities).toHaveLength(0)
     })
@@ -297,7 +301,7 @@ describe('handleSpecs()', () => {
 
       fn(args, rawArgs, options)
 
-      const { specs } = require('../wdio.conf.default').config
+      const { specs } = require(WDIO_CONFIG_DEFAULT_PATH).config
 
       expect(rawArgs).not.toContain('--specs')
       expect(specs[0]).toMatch('/specs/to/**/run')
@@ -312,7 +316,7 @@ describe('handleSpecs()', () => {
 
       fn(args, rawArgs, options)
 
-      const { specs } = require('../wdio.conf.default').config
+      const { specs } = require(WDIO_CONFIG_DEFAULT_PATH).config
 
       expect(specs[0]).toMatch('/specs/to/**/run')
     })
@@ -326,7 +330,7 @@ describe('handleSpecs()', () => {
 
       fn(args, rawArgs, options)
 
-      const { specs } = require('../wdio.conf.default').config
+      const { specs } = require(WDIO_CONFIG_DEFAULT_PATH).config
 
       expect(specs).toHaveLength(0)
     })
@@ -335,9 +339,6 @@ describe('handleSpecs()', () => {
 
 describe('handleConfig()', () => {
   const fn = plugin.handleConfig
-  const fs = require('fs-extra')
-  const path = require('path')
-  const { WDIO_CONFIG_OVERRIDE_PATH, WDIO_CONFIG_DEFAULT_PATH } = require('../lib/constants')
   const projectRoot = os.tmpdir()
   const WDIOBinPath = path.join(projectRoot, 'node_modules/.bin/wdio')
   const api = { resolve: (input) => path.join(projectRoot, input) }
@@ -409,19 +410,26 @@ describe('handleConfig()', () => {
     const configOverridePath = path.join(projectRoot, WDIO_CONFIG_OVERRIDE_PATH)
 
     beforeAll(() => {
-      process.env.VUE_CONTEXT = projectRoot
-
-      jest.resetModules()
-
       fs.ensureDirSync(path.dirname(configOverridePath))
       fs.writeFileSync(configOverridePath,
-`module.exports = {
+`const { registerCapability } = require('${pluginRoot}').capabilities()
+registerCapability('mine', { deviceType: 'theirs' })
+
+module.exports = {
   config: {
     override: true,
     beforeSuite: () => {},
   },
 }`
       )
+    })
+
+    beforeEach(() => {
+      process.env.VUE_CONTEXT = projectRoot
+      delete process.env.VUE_CLI_WDIO_CAPABILITIES
+      delete process.env.VUE_CLI_WDIO_CONFIG_OVERRIDE_PATH
+
+      jest.resetModules()
     })
 
     afterAll(async () => await fs.remove(configOverridePath))
@@ -440,6 +448,30 @@ describe('handleConfig()', () => {
       const { beforeSuite } = require(WDIO_CONFIG_DEFAULT_PATH).config
 
       expect(beforeSuite).toHaveLength(2)
+    })
+
+    test('uses newly registered capabilites', () => {
+      const args = { capabilities: 'mine' }
+      const rawArgs = ['--capabilities', 'mine']
+
+      fn(args, rawArgs, api, options)
+
+      const { capabilities } = require(WDIO_CONFIG_DEFAULT_PATH).config
+
+      expect(capabilities).toMatchObject([{ deviceType: 'theirs' }])
+    })
+
+    test('uses override capabilities', () => {
+      const args = {}
+      const rawArgs = []
+      const configOverride = require(configOverridePath).config
+      configOverride.capabilities = [{ noTouching: '' }]
+
+      fn(args, rawArgs, api, options)
+
+      const { capabilities } = require(WDIO_CONFIG_DEFAULT_PATH).config
+
+      expect(capabilities).toMatchObject(configOverride.capabilities)
     })
   })
 })

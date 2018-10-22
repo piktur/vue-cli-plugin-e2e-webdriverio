@@ -1,5 +1,9 @@
-const { config } = require('./wdio.conf.base')
+const base = require('./wdio.conf.base').config
 const { isDebug, saveScreenshot, printBrowserConsole } = require('./lib/util')
+
+const config = module.exports.config = {
+  ...base,
+}
 
 if (isDebug()) {
   // Ensure remote debugger port cleared on SIGINT
@@ -20,4 +24,8 @@ function onError(message) {
   if (isDebug()) printBrowserConsole()
 }
 
-module.exports = { config, hooks: [...require('./wdio.conf.base').hooks, afterTest, onError] }
+module.exports.hooks = [
+  ...require('./wdio.conf.base').hooks,
+  afterTest,
+  onError,
+]

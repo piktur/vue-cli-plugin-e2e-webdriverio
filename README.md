@@ -31,17 +31,15 @@ Run e2e tests with [WebdriverIO](http://webdriver.io/)
 
 Additionally, all [WebdriverIO CLI](https://github.com/webdriverio/webdriverio/blob/master/packages/wdio-cli/src/config.js) options are supported.
 
-By default, tests are run in **interactive** mode, to run in **headless** mode (for **CI**) use option `--headless`.
-
-Defaults defined on *plugin invokation* will be stored in `vue.config.js`.
-Defaults will be overriden by command line options on *command invokation*.
-
 The *task* may also be run via `vue ui`.
 
 ## Configuration
 
-This plugin provides a number of `WebdriverIO` *capabilities* each utilising [`ChromeDriver`](http://chromedriver.chromium.org/). If you wish to run e2e tests with different *capabilities*, define them within `<projectRoot>/wdio.conf.js`.
-Settings defined at this path will be **merged** with the plugin's defaults.
+Defaults defined on *plugin invokation* will be stored in `vue.config.js`.
+
+Defaults will be overriden by command line options on *command invokation*.
+
+Settings defined within `<projectRoot>/wdio.conf.js` will be **merged** with the plugin's defaults.
 
 If no alternate `--config` defined the plugin will install and configure:
 
@@ -53,19 +51,32 @@ To **override internal configuration entirely** use option `--config` to specify
 In this case, the plugin makes no assumptions; **installation and configuration of framework dependencies will be your responsibility**;
 if you haven't already, run `./node_modules/.bin/wdio` to configure `WebdriverIO`.
 
-The plugin's:
-* internal `WebdriverIO` configuration is exported as `WDIOConfigDefault`
-* `util`s:
-  - `resizeViewport()`
-  - `saveScreenshot(test)`
-  - `printBrowserConsole()`
-* and a set of generic `capabilities`:
-  - `desktop`
-  - `iphone`
-  - `ipad`
-  - `android`
+---
 
-You may use these within your own configuration.
+This plugin provides a number of `WebdriverIO` *capabilities* each utilising [`ChromeDriver`](http://chromedriver.chromium.org/). If you wish to run e2e tests with different *capabilities*, define them within `<projectRoot>/wdio.conf.js`.
+
+When using `--capabilities` to run specs against a subset of devices, you must first [`registerCapability`](#capabilitiesregistercapability) within `<projectRoot>/wdio.conf.js`.
+
+```js
+  // wdio.conf.js
+  const { registerCapability, Chrome } = require('vue-cli-plugin-e2e-webdriverio').capabilities()
+
+  registerCapability('device', new Chrome({
+    // ...options
+  }))
+
+  registerCapability('other', new Chrome({
+    // ...options
+  }))
+```
+
+Then you can run a subset of capabilities like so `yarn test:e2e --capabilities device`
+
+---
+
+By default, tests are run in **interactive** mode, to run in **headless** mode (for **CI**) use option `--headless`.
+
+---
 
 Selenium commands will be executed **synchronously** by default. To override:
 
@@ -76,6 +87,8 @@ Selenium commands will be executed **synchronously** by default. To override:
     // ...
   }
 ```
+
+---
 
 `WebdriverIO` hooks defined in `<projectRoot>/wdio.conf.js` will be appended to behaviour provided by plugin defaults unless run with alternate `--config`.
 
@@ -121,6 +134,67 @@ Selenium commands will be executed **synchronously** by default. To override:
 ```
 
 Consult [WebdriverIO Configuration](http://webdriver.io/guide/getstarted/configuration.html) for available options and browser configuration.
+
+---
+
+## API
+
+### `WDIOConfigDefault() : object`
+
+Returns the plugin's internal `WebdriverIO` configuration.
+
+### `capabilities.Chrome`
+
+#### `new(options)`
+
+Constructor prepares `ChromeDriver` options from given input.
+
+#### `viewportSize { width: number, height: number }`
+
+#### `userAgent : string`
+
+#### [`chromeOptions : object`](http://chromedriver.chromium.org/capabilities)
+
+[`mobileEmulation : object`](http://chromedriver.chromium.org/mobile-emulation)
+
+### `capabilities.get(names: string | string[]) : Array<object>`
+
+Returns a list of registered capabilities matching given name(s).
+Accepts a comma delimited list or Array.
+
+### `capabilities.registerCapability(name: string, capability: object)`
+
+Adds the named capability to the capabilities object.
+
+### `capabilities.desktop(options: object) : capabilities.Chrome`
+
+Returns the predefined capability.
+
+### `capabilities.iphone(options: object) : capabilities.Chrome`
+
+Returns the predefined capability.
+
+### `capabilities.ipad(options: object) : capabilities.Chrome`
+
+Returns the predefined capability.
+
+### `capabilities.android(options: object) : capabilities.Chrome`
+
+Returns the predefined capability.
+
+### `util.resizeViewport() : void`
+
+If current *capability* has property `viewportSize` this function will issue `WebdriverIO` command to resize the current browser *window* so that inner dimensions match `viewportSize`.
+
+### `util.saveScreenshot(test: object) : void`
+
+Saves screenshot to given `screenshotPath` or tmp directory and logs error info to stdout.
+
+### `util.printBrowserConsole() : void`
+
+Log all browser output to stdout.
+
+---
 
 ## Installing in an Already Created Project
 

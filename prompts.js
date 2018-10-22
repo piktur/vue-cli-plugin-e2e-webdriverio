@@ -7,7 +7,7 @@ const {
   DEFAULT_SPECS,
 } = require('./lib/constants')
 const en = require('./locales/en.json').io.piktur[PLUGIN_NAME].tasks.test
-const { capabilityNames } = require('./lib/capabilities')
+const capabilityNames = require('./lib/capabilities').names()
 
 module.exports = (pkg) => {
   let name

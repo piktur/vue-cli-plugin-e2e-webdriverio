@@ -1,9 +1,10 @@
-let { config } = require('./wdio.conf.debug')
+const base = require('./wdio.conf.debug').config
 const { chromeDriverArgs } = require('./lib/capabilities/Chrome')
 const { isDefault } = require('./lib/util')
 
-config = module.exports.config = {
-  ...config,
+const config = module.exports.config = {
+  ...base,
+  capabilities: [],
   protocol: 'http',
   chromeDriverArgs: chromeDriverArgs(),
   services: ['chromedriver'],
@@ -22,6 +23,7 @@ if (isDefault()) {
   if (configOverride) {
     const merge = require('lodash.merge')
     configOverride = require(configOverride).config
+
     merge(config, configOverride)
   }
 
@@ -29,4 +31,8 @@ if (isDefault()) {
   const { mergeHooks } = require('./lib/util')
 
   mergeHooks(config, ...hooks)
+}
+
+if (process.env.VUE_CLI_WDIO_CAPABILITIES) {
+  config.capabilities = require('./lib/capabilities').get(process.env.VUE_CLI_WDIO_CAPABILITIES)
 }

@@ -4,7 +4,7 @@ const {
   DEFAULT_CAPABILITIES,
   DEFAULT_SPECS,
 } = require('./lib/constants')
-const { capabilityNames } = require('./lib/capabilities')
+const capabilityNames = require('./lib/capabilities').names()
 
 module.exports = (api) => {
   const namespace = `io.piktur.${PLUGIN_NAME}.tasks.test`
