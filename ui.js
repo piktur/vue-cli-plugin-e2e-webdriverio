@@ -3,6 +3,8 @@ const {
   DEFAULT_BASE_URL,
   DEFAULT_CAPABILITIES,
   DEFAULT_SPECS,
+  DEFAULT_MODE,
+  MODES,
 } = require('./lib/constants')
 const capabilityNames = require('./lib/capabilities').names()
 
@@ -55,6 +57,12 @@ module.exports = (api) => {
         default: pluginOptions[name] || false,
         description: `${namespace}.${name}`,
       }, {
+        name: name = 'mode',
+        type: 'list',
+        choices: MODES.map(name => ({ name, value: name, checked: false })),
+        default: pluginOptions[name] || DEFAULT_MODE,
+        description: `${namespace}.${name}`,
+      }, {
         name: name = 'wdioCLI',
         type: 'input',
         default: undefined,
@@ -66,6 +74,7 @@ module.exports = (api) => {
       if (answers.specs) args.push('--specs', answers.specs)
       if (answers.baseUrl) args.push('--baseUrl', answers.baseUrl)
       if (answers.capabilities) args.push('--capabilities', answers.capabilities)
+      if (answers.mode) args.push('--mode', answers.mode)
       answers.headless ? args.push('--headless') : args.push('--no-headless')
       answers.debug ? args.push('--debug') : args.push('--no-debug')
       if (answers.wdioCLI) args.push(answers.wdioCLI.split(' '))
