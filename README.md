@@ -143,6 +143,8 @@ Consult [WebdriverIO Configuration](http://webdriver.io/guide/getstarted/configu
 
 Returns the plugin's internal `WebdriverIO` configuration.
 
+### `capabilities() : object`
+
 ### `capabilities.Chrome`
 
 #### `new(options)`
@@ -181,6 +183,8 @@ Returns the predefined capability.
 ### `capabilities.android(options: object) : capabilities.Chrome`
 
 Returns the predefined capability.
+
+### `util() : object`
 
 ### `util.resizeViewport() : void`
 
