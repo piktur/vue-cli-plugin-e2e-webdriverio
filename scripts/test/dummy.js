@@ -34,7 +34,13 @@ describe('an assertion', function() {
 
     assert.ok(app.isVisible())
   })
-})`;
+})`
+
+const env = {
+  development: 'VUE_APP_TITLE=Dummy (development)',
+  production: 'VUE_APP_TITLE=Dummy (production)',
+  test: 'VUE_APP_TITLE=Dummy (test)',
+};
 
 (async () => {
   try {
@@ -64,6 +70,7 @@ describe('an assertion', function() {
       await Promise.all([
         project.write('wdio.conf.js', WDIOCOnfigOverrideTemplate),
         project.write('spec/dummy.spec.js', specTemplate),
+        ...Object.keys(env).map((key) => project.write(`.env.${key}`, env[key])),
       ])
     } else {
       process.chdir(projectRoot)

@@ -17,11 +17,12 @@ module.exports = (api, options) => {
       '--config': en.config,
       '--debug, --no-debug': en.debug,
       '--headless, --no-headless': en.headless,
+      '--mode': en.mode,
       '--specs': en.specs,
     },
     details: en.details,
   }, async (args, rawArgs) => {
-    const { execa } = require('@vue/cli-shared-utils')
+    const { execa, error } = require('@vue/cli-shared-utils')
     const pluginOptions = options.pluginOptions[PLUGIN_NAME] || {}
 
     process.env.VUE_CONTEXT = api.resolve('./')
@@ -34,25 +35,21 @@ module.exports = (api, options) => {
       console.error(err)
     }
 
-    try {
-      handleConfig(args, rawArgs, api, pluginOptions)
-      const runner = execa(WDIOBinPath(api), rawArgs, { stdio: 'inherit' })
+    handleConfig(args, rawArgs, api, pluginOptions)
+    const runner = execa(WDIOBinPath(api), rawArgs, { stdio: 'inherit' })
 
-      if (server) {
-        runner.on('exit', () => server.close())
-        runner.on('error', () => server.close())
-      }
-
-      if (process.env.VUE_CLI_TEST) {
-        runner.on('exit', code => process.exit(code))
-      }
-
-      return runner
-    } catch (err) {
-      // WDIO launcher returns exit code 1 on failure consequently execa throws,
-      // catch to suppress unnecessary stdout pollution.
-      console.error(err.message)
+    if (server) {
+      runner.on('exit', () => server.close())
+      runner.on('error', () => server.close())
     }
+
+    if (process.env.VUE_CLI_TEST) {
+      runner.on('exit', code => process.exit(code))
+    }
+
+    // @todo WDIO launcher returns exit code 1 on failure consequently execa throws,
+    // catch to suppress unnecessary stdout pollution.
+    return runner.catch(err => error(err.message))
   })
 }
 
@@ -85,11 +82,16 @@ async function handleBaseUrl(args, rawArgs, api, { baseUrl }) {
   let serverPromise
 
   removeArg(rawArgs, 'baseUrl')
+  removeArg(rawArgs, 'mode')
 
   if (args.baseUrl) {
     serverPromise = Promise.resolve({ url: args.baseUrl })
   } else {
-    serverPromise = baseUrl ? Promise.resolve({ url: baseUrl }) : api.service.run('serve')
+    const mode = args.mode
+
+    serverPromise = baseUrl
+      ? Promise.resolve({ url: baseUrl })
+      : api.service.run('serve', { mode })
   }
 
   try {
@@ -183,7 +185,6 @@ function handleConfig(args, rawArgs, api, options) {
 
   const overridePath = api.resolve(WDIO_CONFIG_OVERRIDE_PATH)
   if (fs.existsSync(overridePath)) {
-    // expose user overrides to config file
     process.env.VUE_CLI_WDIO_CONFIG_OVERRIDE_PATH = overridePath
   }
 

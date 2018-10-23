@@ -11,7 +11,7 @@
             "description": "Run e2e tests with WebdriverIO",
             "details": "All WebdriverIO CLI options are supported.\nhttp://webdriver.io/guide/testrunner/gettingstarted.html",
             "headless": "Run e2e tests in headless mode without GUI (default capabilities only)",
-            "mode": "Specify the mode the dev server should run in (default: production)",
+            "mode": "Run the dev server in specified mode (default: production)",
             "specs": "Glob pattern determines specs to run (relative to <projectRoot>)",
             "usage": "vue-cli-service test:e2e [options]",
             "wdioCLI": "Additional WebdriverIO CLI options"

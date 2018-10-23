@@ -19,7 +19,7 @@ describe('exports', () => {
 describe('handleBaseUrl()', () => {
   const Service = require('@vue/cli-service/lib/Service')
 
-  const mockRun = jest.fn((command) => {
+  const mockRun = jest.fn((command, args, rawArgv) => {
     switch (command) {
     case 'serve':
       return Promise.resolve({ server: {}, url: 'webpackDevServer' })
@@ -62,12 +62,12 @@ describe('handleBaseUrl()', () => {
   })
 
   describe('when undefined', () => {
-    args = {}
-    rawArgs = []
+    args = { mode: 'development' }
+    rawArgs = ['--mode', 'development']
     options = {}
 
     test('starts the dev server and sets baseUrl CLI option accordingly', async () => {
-      expect(mockRun).toBeCalledWith('serve')
+      expect(mockRun).toBeCalledWith('serve', { mode: 'development' })
       expect(rawArgs).toContain('--baseUrl', 'webpackDevServer')
     })
   })

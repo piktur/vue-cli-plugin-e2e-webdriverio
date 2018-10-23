@@ -16,6 +16,7 @@ Run e2e tests with [WebdriverIO](http://webdriver.io/)
       --specs spec/**
       --headless
       --debug
+      --mode development
     yarn run test:e2e --config wdio.conf.js
     yarn run test:e2e --suite focus --bail 1
 
@@ -25,6 +26,7 @@ Run e2e tests with [WebdriverIO](http://webdriver.io/)
     --config [STRING<PATH>]          Use your own WebdriverIO configuration; overrides plugin defaults (relative to <projectRoot>)
     --headless, --no-headless        Run e2e tests in headless mode without GUI (default capabilities only)
     --debug, --no-debug              Enable Node inspector and debugging tools
+    --mode [STRING]                  Run the dev server in specified mode (default: production)
     --specs [STRING[,STRING]]        Glob pattern determines specs to run (relative to <projectRoot>)
 
 ```
