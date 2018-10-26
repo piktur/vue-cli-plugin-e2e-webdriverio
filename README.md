@@ -137,8 +137,6 @@ Selenium commands will be executed **synchronously** by default. To override:
 
 Consult [WebdriverIO Configuration](http://webdriver.io/guide/getstarted/configuration.html) for available options and browser configuration.
 
----
-
 ## API
 
 ### `WDIOConfigDefault() : object`
@@ -199,8 +197,6 @@ Saves screenshot to given `screenshotPath` or tmp directory and logs error info 
 ### `util.printBrowserConsole() : void`
 
 Log all browser output to stdout.
-
----
 
 ## Installing in an Already Created Project
 
