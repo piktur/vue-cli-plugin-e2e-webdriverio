@@ -365,10 +365,12 @@ describe('handleConfig()', () => {
   })
 
   describe('when extistent path defined in project config', () => {
-    test('should append default WDIO config path to args', () => {
-      const configFile = 'wdio.conf.mine.js'
-      const configPath = path.join(projectRoot, configFile)
+    const configFile = 'wdio.conf.mine.js'
+    const configPath = path.join(projectRoot, configFile)
 
+    beforeAll(() => fs.writeFileSync(configPath, ''))
+
+    test('should append default WDIO config path to args', () => {
       fn({}, [], api, { config: configPath })
 
       expect(rawArgs).not.toContain('--config')
