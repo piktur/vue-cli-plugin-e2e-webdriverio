@@ -68,7 +68,7 @@ function WDIOBinPath(api) {
 module.exports.WDIOConfigDefault = () => require('./wdio.conf.default.js')
 module.exports.capabilities = () => require('./lib/capabilities')
 module.exports.util = () => require('./lib/util')
-module.exports.defaultModes = {
+const defaultModes = module.exports.defaultModes = {
   // @note Command `vue-cli-service serve` is issued if option `baseUrl` undefined. The command
   // starts the "development" server in the mode specified here. Default Vue CLI configuration
   // enables Webpack HMR in `development` mode only. If mode set to anything other than `production`
@@ -78,7 +78,7 @@ module.exports.defaultModes = {
   'test:e2e': 'production',
 }
 
-async function handleBaseUrl(args, rawArgs, api, { baseUrl }) {
+async function handleBaseUrl(args, rawArgs, api, options) {
   let serverPromise
 
   removeArg(rawArgs, 'baseUrl')
@@ -87,10 +87,10 @@ async function handleBaseUrl(args, rawArgs, api, { baseUrl }) {
   if (args.baseUrl) {
     serverPromise = Promise.resolve({ url: args.baseUrl })
   } else {
-    const mode = args.mode
+    const mode = args.mode || options.mode || defaultModes['test:e2e']
 
-    serverPromise = baseUrl
-      ? Promise.resolve({ url: baseUrl })
+    serverPromise = options.baseUrl
+      ? Promise.resolve({ url: options.baseUrl })
       : api.service.run('serve', { mode })
   }
 
