@@ -21,8 +21,6 @@ module.exports = (api, options) => {
     api.hasPlugin('mocha') || api.extendPackage({
       devDependencies: {
         'chai': '^4.1.2',
-        'sinon': '^6.1.4',
-        'sinon-chai': '^3.2.0',
       },
     })
 

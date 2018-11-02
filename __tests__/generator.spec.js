@@ -96,8 +96,6 @@ describe('when no config override given', () => {
       ])
 
       expect(pkg.devDependencies).toHaveProperty('chai')
-      expect(pkg.devDependencies).toHaveProperty('sinon')
-      expect(pkg.devDependencies).toHaveProperty('sinon-chai')
     })
   })
 })
