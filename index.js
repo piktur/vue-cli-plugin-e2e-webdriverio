@@ -66,8 +66,8 @@ function WDIOBinPath(api) {
 }
 
 module.exports.WDIOConfigDefault = () => require('./wdio.conf.default.js')
-module.exports.capabilities = () => require('./lib/capabilities')
-module.exports.util = () => require('./lib/util')
+module.exports.capabilities = require('./lib/capabilities')
+module.exports.util = require('./lib/util')
 const defaultModes = module.exports.defaultModes = {
   // @note Command `vue-cli-service serve` is issued if option `baseUrl` undefined. The command
   // starts the "development" server in the mode specified here. Default Vue CLI configuration

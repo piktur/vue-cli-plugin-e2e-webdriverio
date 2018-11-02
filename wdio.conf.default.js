@@ -1,5 +1,5 @@
 const base = require('./wdio.conf.debug').config
-const { chromeDriverArgs } = require('./lib/capabilities/Chrome')
+const { chromeDriverArgs, capabilities } = require('./lib/capabilities')
 const { isDefault } = require('./lib/util')
 
 const config = module.exports.config = {
@@ -34,5 +34,5 @@ if (isDefault()) {
 }
 
 if (process.env.VUE_CLI_WDIO_CAPABILITIES) {
-  config.capabilities = require('./lib/capabilities').get(process.env.VUE_CLI_WDIO_CAPABILITIES)
+  config.capabilities = capabilities.find(process.env.VUE_CLI_WDIO_CAPABILITIES)
 }

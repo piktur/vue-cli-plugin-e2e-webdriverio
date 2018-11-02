@@ -52,17 +52,17 @@ If you haven't already, run `./node_modules/.bin/wdio` to configure `WebdriverIO
 
 This plugin provides a number of `WebdriverIO` *capabilities* each utilising [`ChromeDriver`](http://chromedriver.chromium.org/). If you wish to run e2e tests with different *capabilities*, define them within `<projectRoot>/wdio.conf.js`.
 
-When using `--capabilities` to run specs against a subset of devices, you must first [`registerCapability`](#capabilitiesregistercapabilityname-string-capability-object) within `<projectRoot>/wdio.conf.js`.
+When using `--capabilities` to run specs against a subset of devices, you must first [`capabilities.register`](#capabilitiesregistername-string-capability-object) within `<projectRoot>/wdio.conf.js`.
 
 ```js
   // wdio.conf.js
-  const { registerCapability, Chrome } = require('vue-cli-plugin-e2e-webdriverio').capabilities()
+  const { capabilities, Chrome } = require('vue-cli-plugin-e2e-webdriverio').capabilities
 
-  registerCapability('device', new Chrome({
+  capabilities.register('device', new Chrome({
     // ...options
   }))
 
-  registerCapability('other', new Chrome({
+  capabilities.register('other', new Chrome({
     // ...options
   }))
 ```
@@ -91,10 +91,11 @@ Selenium commands will be executed **synchronously** by default. To override:
 
 ```js
   // wdio.conf.js
-  const plugin = require('vue-cli-plugin-e2e-webdriverio')
-  const base = plugin.WDIOConfigDefault().config
-  const { resizeViewport } = plugin.util()
-  const { Chrome } = plugin.capabilties()
+  const { WDIOConfigDefault, capabilities, util } = require('vue-cli-plugin-e2e-webdriverio')
+  const { resizeViewport } = util
+  const { Chrome } = capabilities
+
+  const base = WDIOConfigDefault().config
 
   exports.config = {
     ...base,
@@ -154,8 +155,6 @@ Refer to [Vue CLI Service Plugin `defaultModes`](https://cli.vuejs.org/dev-guide
 
 Returns the plugin's internal `WebdriverIO` configuration.
 
-### `capabilities() : object`
-
 ### `capabilities.Chrome`
 
 #### `new(options)`
@@ -170,14 +169,14 @@ Constructor prepares `ChromeDriver` options from given input.
 
 [`mobileEmulation : object`](http://chromedriver.chromium.org/mobile-emulation)
 
-### `capabilities.get(names: string | string[]) : Array<object>`
+### `capabilities.find(names: string | string[]) : Array<object>`
 
 Returns a list of registered capabilities matching given name(s).
 Accepts a comma delimited list or Array.
 
-### `capabilities.registerCapability(name: string, capability: object)`
+### `capabilities.register(name: string, capability: object)`
 
-Adds the named capability to the capabilities object.
+Adds the named capability to the capabilities container.
 
 ### `capabilities.desktop(options: object) : capabilities.Chrome`
 
@@ -194,8 +193,6 @@ Returns the predefined capability.
 ### `capabilities.android(options: object) : capabilities.Chrome`
 
 Returns the predefined capability.
-
-### `util() : object`
 
 ### `util.resizeViewport() : void`
 

@@ -414,8 +414,8 @@ describe('handleConfig()', () => {
     beforeAll(() => {
       fs.ensureDirSync(path.dirname(configOverridePath))
       fs.writeFileSync(configOverridePath,
-`const { registerCapability } = require('${pluginRoot}').capabilities()
-registerCapability('mine', { deviceType: 'theirs' })
+`const { capabilities } = require('${pluginRoot}').capabilities
+capabilities.register('mine', { deviceType: 'theirs' })
 
 module.exports = {
   config: {

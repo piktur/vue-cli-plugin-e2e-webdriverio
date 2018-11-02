@@ -9,7 +9,7 @@ const {
   MODES,
 } = require('./lib/constants')
 const en = require('./locales/en.json').io.piktur[PLUGIN_NAME].tasks.test
-const capabilityNames = require('./lib/capabilities').names()
+const { capabilities } = require('./lib/capabilities')
 
 module.exports = (pkg) => {
   let name
@@ -33,7 +33,7 @@ module.exports = (pkg) => {
     }, {
       name: name = 'capabilities',
       type: 'checkbox',
-      choices: capabilityNames.map(name => ({ name, value: name, checked: false })),
+      choices: capabilities.names.map(name => ({ name, value: name, checked: false })),
       default: DEFAULT_CAPABILITIES,
       message: en[name],
       // when: ({ config }) => config === '',
