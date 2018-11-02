@@ -35,6 +35,8 @@ Additionally, all [WebdriverIO CLI](https://github.com/webdriverio/webdriverio/b
 
 The *task* may also be run via `vue ui`.
 
+## [Dependencies](https://github.com/piktur/vue-cli-plugin-e2e-webdriverio/network/dependencies)
+
 ## Configuration
 
 Defaults defined on *plugin invokation* will be stored in `vue.config.js`.
@@ -43,15 +45,8 @@ Defaults will be overriden by command line options on *command invokation*.
 
 Settings defined within `<projectRoot>/wdio.conf.js` will be **merged** with the plugin's defaults.
 
-If no alternate `--config` defined the plugin will install and configure:
-
-* [`mocha` framework](https://mochajs.org/)
-* [`chai` assertions library](https://www.chaijs.com/)
-* [`sinon` mocks library](https://sinonjs.org/)
-
 To **override internal configuration entirely** use option `--config` to specify alternate configuration file.
-In this case, the plugin makes no assumptions; **installation and configuration of framework dependencies will be your responsibility**;
-if you haven't already, run `./node_modules/.bin/wdio` to configure `WebdriverIO`.
+If you haven't already, run `./node_modules/.bin/wdio` to configure `WebdriverIO`.
 
 ---
 
@@ -136,6 +131,22 @@ Selenium commands will be executed **synchronously** by default. To override:
 ```
 
 Consult [WebdriverIO Configuration](http://webdriver.io/guide/getstarted/configuration.html) for available options and browser configuration.
+
+---
+
+You may need to set `NODE_ENV` and `VUE_CLI_MODE` if running tests in mode other than plugin default, `production`.
+The enviroment variable must be set before Vue CLI Service [`loadEnv`](https://github.com/vuejs/vue-cli/blob/dev/packages/%40vue/cli-service/lib/Service.js#L57) called.
+
+```js
+  // package.json
+  {
+    "scripts": {
+      "test:e2e": "NODE_ENV=development VUE_CLI_MODE=development vue-cli-service test:e2e"
+    }
+  }
+```
+
+Refer to [Vue CLI Service Plugin `defaultModes`](https://cli.vuejs.org/dev-guide/plugin-dev.html#service-plugin)
 
 ## API
 
