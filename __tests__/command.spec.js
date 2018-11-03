@@ -17,9 +17,13 @@ describe('exports', () => {
 })
 
 describe('handleBaseUrl()', () => {
-  const Service = require('@vue/cli-service/lib/Service')
+  let api
+  const fn = plugin.handleBaseUrl
 
-  const mockRun = jest.fn((command, args, rawArgv) => {
+  const Service = require('@vue/cli-service/lib/Service')
+  jest.mock('@vue/cli-service/lib/Service')
+
+  const mockRun = jest.fn(async (command, args, rawArgv) => {
     switch (command) {
     case 'serve':
       return Promise.resolve({ server: {}, url: 'webpackDevServer' })
@@ -28,71 +32,139 @@ describe('handleBaseUrl()', () => {
     }
   })
 
-  jest.mock('@vue/cli-service/lib/Service', () => {
-    return jest.fn().mockImplementation(() => {
+  beforeAll(async () => {
+    Service.mockImplementation(() => {
       return { run: mockRun }
     })
+
+    const service = await new Service('/', {})
+    api = { service }
   })
 
-  const fn = plugin.handleBaseUrl
-  const service = new Service('/', {})
-  const api = { service }
-  let args, rawArgs, options
-
-  beforeEach(async () => await fn(args, rawArgs, api, options))
-
-  describe('with CLI option', () => {
-    args = { baseUrl: 'remote' }
-    rawArgs = ['--baseUrl', 'remote']
-    options = {}
+  describe('with --baseUrl', () => {
+    const args = { baseUrl: 'remote' }
+    const rawArgs = ['--baseUrl', 'remote']
+    const options = {}
 
     test('sets baseUrl CLI option', async () => {
+      await fn(args, rawArgs, api, options)
+
       expect(rawArgs).toContain(...rawArgs)
     })
   })
 
-  describe('defined in project options', () => {
-    args = {}
-    rawArgs = []
-    options = { baseUrl: 'remote' }
+  describe('without --baseUrl', () => {
+    const mode = 'development'
+    const NODE_ENV = process.env.NODE_ENV
+    const VUE_CLI_MODE = process.env.VUE_CLI_MODE
 
-    test('sets baseUrl CLI option', async () => {
-      expect(rawArgs).toContain('--baseUrl', 'remote')
+    const sharedExamples = (args, rawArgs, options) => {
+      test('starts the dev server in mode and adds --baseUrl to argv', async () => {
+        await fn(args, rawArgs, api, options)
+
+        expect(mockRun).toBeCalledWith('serve', { mode })
+        expect(rawArgs).toContain('--baseUrl', 'webpackDevServer')
+      })
+    }
+
+    beforeEach(() => {
+      delete process.env.NODE_ENV
+      delete process.env.VUE_CLI_MODE
+    })
+
+    afterEach(() => {
+      process.env.VUE_CLI_MODE = VUE_CLI_MODE
+      process.env.NODE_ENV = NODE_ENV
+    })
+
+    describe('with --mode', () => {
+      const args = { mode }
+      const rawArgs = ['--mode', mode]
+      const options = {}
+
+      beforeEach(() => {
+        process.argv.push(...rawArgs)
+        plugin.handleMode()
+      })
+
+      afterEach(() => process.argv.splice(-2))
+
+      sharedExamples(args, rawArgs, options)
+    })
+
+    describe('without --mode and NODE_ENV defined', () => {
+      const args = {}
+      const rawArgs = []
+      const options = {}
+
+      beforeEach(() => {
+        process.env.NODE_ENV = mode
+        plugin.handleMode()
+      })
+
+      sharedExamples(args, rawArgs, options)
+    })
+
+    describe('without --mode and VUE_CLI_MODE defined', () => {
+      const args = {}
+      const rawArgs = []
+      const options = {}
+
+      beforeEach(() => {
+        process.env.VUE_CLI_MODE = mode
+        plugin.handleMode()
+      })
+
+      sharedExamples(args, rawArgs, options)
+    })
+
+    describe('when mode defined in plugin options', () => {
+      const args = {}
+      const rawArgs = []
+      const options = { mode }
+
+      beforeEach(() => {
+        plugin.handleMode()
+      })
+
+      sharedExamples(args, rawArgs, options)
     })
   })
 
-  describe('when undefined', () => {
-    args = { mode: 'development' }
-    rawArgs = ['--mode', 'development']
-    options = {}
+  describe('with plugin options', () => {
+    const args = {}
+    const rawArgs = []
+    const options = { baseUrl: 'remote' }
 
-    test('starts the dev server and sets baseUrl CLI option accordingly', async () => {
-      expect(mockRun).toBeCalledWith('serve', { mode: 'development' })
-      expect(rawArgs).toContain('--baseUrl', 'webpackDevServer')
+    test('sets baseUrl CLI option', async () => {
+      await fn(args, rawArgs, api, options)
+
+      expect(rawArgs).toContain('--baseUrl', 'remote')
     })
   })
 })
 
 describe('handlePort()', () => {
   const fn = plugin.handlePort
-  let args, rawArgs
 
-  beforeEach(async () => await fn(args, rawArgs))
-
-  describe('with CLI option', () => {
-    args = { port: 1 }
-    rawArgs = ['--port', 1]
+  describe('with --port', () => {
+    const args = { port: 1 }
+    const rawArgs = ['--port', 1]
 
     test('sets port CLI option', async () => {
+      await fn(args, rawArgs)
+
       expect(rawArgs).toContain(...rawArgs)
     })
   })
 
-  describe('when undefined', () => {
-    args = {}
-    rawArgs = []
+  describe('without --port', () => {
+    const args = {}
+    const rawArgs = []
 
     test('sets port CLI option', async () => {
+      await fn(args, rawArgs)
+
       expect(rawArgs).toContain('--port')
     })
   })
@@ -100,67 +172,88 @@ describe('handlePort()', () => {
 
 describe('handleHeadless()', () => {
   const fn = plugin.handleHeadless
-  let args, rawArgs, options
 
   beforeEach(() => {
     delete process.env.VUE_CLI_WDIO_HEADLESS
     delete process.env.VUE_CLI_WDIO_INTERACTIVE
-
-    fn(args, rawArgs, options)
   })
 
-  describe('with CLI option', () => {
-    args = { headless: true }
-    rawArgs = ['--headless']
-    options = {}
+  describe('with --headless', () => {
+    const args = { headless: true }
+    const rawArgs = ['--headless']
+    const options = {}
 
     test('enables headless mode', () => {
+      fn(args, rawArgs, options)
+
       expect(rawArgs).not.toContain('--headless')
       expect(isHeadless()).toBeTruthy
       expect(isInteractive()).toBeFalsey
     })
   })
 
-  describe('enabled within project options', () => {
-    args = {}
-    rawArgs = []
-    options = { headless: true }
+  describe('with --no-headless', () => {
+    const args = { headless: false }
+    const rawArgs = ['--no-headless']
+    const options = {}
 
     test('enables headless mode', () => {
+      fn(args, rawArgs, options)
+
+      expect(rawArgs).not.toContain('--no-headless')
+      expect(isHeadless()).toBeFalsey
+      expect(isInteractive()).toBeTruthy
+    })
+  })
+
+  describe('enabled in plugin options', () => {
+    const args = {}
+    const rawArgs = []
+    const options = { headless: true }
+
+    test('enables headless mode', () => {
+      fn(args, rawArgs, options)
+
       expect(isHeadless()).toBeTruthy
       expect(isInteractive()).toBeFalsey
     })
   })
 
-  describe('disabled within project options', () => {
-    args = {}
-    rawArgs = []
-    options = { headless: false }
+  describe('disabled in plugin options', () => {
+    const args = {}
+    const rawArgs = []
+    const options = { headless: false }
 
     test('does not set headless CLI option', () => {
+      fn(args, rawArgs, options)
+
       expect(isHeadless()).toBeFalsey
       expect(isInteractive()).toBeTruthy
     })
   })
 
   describe('precedence', () => {
-    describe('enabled in project options', () => {
-      args = { headless: false }
-      rawArgs = ['--no-headless']
-      options = { headless: true }
+    describe('enabled in plugin options', () => {
+      const args = { headless: false }
+      const rawArgs = ['--no-headless']
+      const options = { headless: true }
 
       test('CLI option wins', () => {
+        fn(args, rawArgs, options)
+
         expect(isHeadless()).toBeFalsey
         expect(isInteractive()).toBeTruthy
       })
     })
 
-    describe('disabled in project options', () => {
-      args = { headless: true }
-      rawArgs = ['--headless']
-      options = { headless: false }
+    describe('disabled in plugin options', () => {
+      const args = { headless: true }
+      const rawArgs = ['--headless']
+      const options = { headless: false }
 
       test('CLI option wins', () => {
+        fn(args, rawArgs, options)
+
         expect(isHeadless()).toBeTruthy
         expect(isInteractive()).toBeFalsey
       })
@@ -170,62 +263,82 @@ describe('handleHeadless()', () => {
 
 describe('handleDebug()', () => {
   const fn = plugin.handleDebug
-  let args, rawArgs, options
 
   beforeEach(() => {
     delete process.env.VUE_CLI_WDIO_DEBUG
-
-    fn(args, rawArgs, options)
   })
 
-  describe('with CLI option', () => {
-    args = { debug: true }
-    rawArgs = ['--debug']
-    options = {}
+  describe('with --debug', () => {
+    const args = { debug: true }
+    const rawArgs = ['--debug']
+    const options = {}
 
     test('enables debug mode', () => {
+      fn(args, rawArgs, options)
+
       expect(rawArgs).not.toContain('--debug')
       expect(isDebug()).toBeTruthy
     })
   })
 
-  describe('enabled within project options', () => {
-    args = { debug: true }
-    rawArgs = []
-    options = { debug: true }
+  describe('with --no-debug', () => {
+    const args = { debug: false }
+    const rawArgs = ['--no-debug']
+    const options = {}
 
     test('enables debug mode', () => {
+      fn(args, rawArgs, options)
+
+      expect(rawArgs).not.toContain('--no-debug')
+      expect(isDebug()).toBeFalsey
+    })
+  })
+
+  describe('enabled in plugin options', () => {
+    const args = { debug: true }
+    const rawArgs = []
+    const options = { debug: true }
+
+    test('enables debug mode', () => {
+      fn(args, rawArgs, options)
+
       expect(isDebug()).toBeTruthy
     })
   })
 
-  describe('disabled within project options', () => {
-    args = {}
-    rawArgs = []
-    options = { debug: false }
+  describe('disabled in plugin options', () => {
+    const args = {}
+    const rawArgs = []
+    const options = { debug: false }
 
     test('does not set debug CLI option', () => {
+      fn(args, rawArgs, options)
+
       expect(isDebug()).toBeFalsey
     })
   })
 
   describe('precedence', () => {
-    describe('enabled in project options', () => {
-      args = { debug: false }
-      rawArgs = ['--no-debug']
-      options = { debug: true }
+    describe('enabled in plugin options', () => {
+      const args = { debug: false }
+      const rawArgs = ['--no-debug']
+      const options = { debug: true }
 
       test('CLI option wins', () => {
+        fn(args, rawArgs, options)
+
         expect(isDebug()).toBeFalsy
       })
     })
 
-    describe('disabled in project options', () => {
-      args = { debug: true }
-      rawArgs = ['--debug']
-      options = { debug: false }
+    describe('disabled in plugin options', () => {
+      const args = { debug: true }
+      const rawArgs = ['--debug']
+      const options = { debug: false }
 
       test('CLI option wins', () => {
+        fn(args, rawArgs, options)
+
         expect(isDebug()).toBeTruthy
       })
     })
@@ -240,7 +353,7 @@ describe('handleCapabilities()', () => {
     delete process.env.VUE_CLI_WDIO_CAPABILITIES
   })
 
-  describe('with CLI option', () => {
+  describe('with --capabilities', () => {
     test('exposes list to WDIO config', () => {
       const args = { capabilities: 'desktop,iphone' }
       const rawArgs = ['--capabilities', 'desktop,iphone']
@@ -255,7 +368,7 @@ describe('handleCapabilities()', () => {
     })
   })
 
-  describe('defined in project options', () => {
+  describe('with plugin options', () => {
     test('exposes list to WDIO config', () => {
       const args = {}
       const rawArgs = []
@@ -270,7 +383,7 @@ describe('handleCapabilities()', () => {
   })
 
   describe('none', () => {
-    test('exposes list to WDIO config', () => {
+    test('WDIO config.capabilities should be empty', () => {
       const args = {}
       const rawArgs = []
       const options = {}
@@ -293,7 +406,7 @@ describe('handleSpecs()', () => {
     delete process.env.VUE_CLI_WDIO_SPECS
   })
 
-  describe('with CLI option', () => {
+  describe('with --specs', () => {
     test('exposes pattern to WDIO config', () => {
       const args = { specs: 'specs/to/**/run' }
       const rawArgs = ['--specs', 'specs/to/**/run']
@@ -308,7 +421,7 @@ describe('handleSpecs()', () => {
     })
   })
 
-  describe('with project option', () => {
+  describe('with plugin options', () => {
     test('exposes pattern to WDIO config', () => {
       const args = {}
       const rawArgs = []
@@ -323,7 +436,7 @@ describe('handleSpecs()', () => {
   })
 
   describe('none', () => {
-    test('exposes pattern to WDIO config', () => {
+    test('WDIO config.specs should be empty', () => {
       const args = {}
       const rawArgs = []
       const options = {}
@@ -356,7 +469,7 @@ describe('handleConfig()', () => {
   })
 
   describe('default', () => {
-    test('should append default WDIO config path to args', () => {
+    test('appends default WDIO config path to argv', () => {
       fn(args, rawArgs, api, options)
 
       expect(rawArgs).not.toContain('--config')
@@ -364,13 +477,13 @@ describe('handleConfig()', () => {
     })
   })
 
-  describe('when extistent path defined in project config', () => {
+  describe('extistent path defined in plugin options', () => {
     const configFile = 'wdio.conf.mine.js'
     const configPath = path.join(projectRoot, configFile)
 
     beforeAll(() => fs.writeFileSync(configPath, ''))
 
-    test('should append default WDIO config path to args', () => {
+    test('appends default WDIO config path to argv', () => {
       fn({}, [], api, { config: configPath })
 
       expect(rawArgs).not.toContain('--config')
@@ -378,7 +491,7 @@ describe('handleConfig()', () => {
     })
   })
 
-  describe('when existent relative path given to CLI', () => {
+  describe('provides existent relative path with --config', () => {
     const configFile = 'wdio.conf.mine.js'
     const configPath = path.join(projectRoot, configFile)
 
@@ -389,7 +502,7 @@ describe('handleConfig()', () => {
       fs.existsSync(configPath) || fs.writeFileSync(configPath, '')
     })
 
-    test('should append their WDIO config path to args', () => {
+    test('appends their WDIO config path to argv', () => {
       const args = { config: configFile }
       const rawArgs = ['--config', configFile]
 
@@ -400,7 +513,7 @@ describe('handleConfig()', () => {
     })
   })
 
-  describe('when non existent path given to CLI', () => {
+  describe('provides non existent path with --config', () => {
     test('should throw', () => {
       const mockCall = () => fn({ config: '_.js' }, ['--config', '_.js'], api, options)
 

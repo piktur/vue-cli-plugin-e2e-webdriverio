@@ -11,9 +11,12 @@ module.exports = (api, options) => {
     },
   })
 
+  const mode = options.mode
+  const cmd = 'vue-cli-service test:e2e'
+
   api.extendPackage({
     scripts: {
-      'test:e2e': 'vue-cli-service test:e2e',
+      'test:e2e': mode ? `NODE_ENV=${mode} VUE_CLI_MODE=${mode} ${cmd}` : cmd,
     },
     vue: {
       pluginOptions: {

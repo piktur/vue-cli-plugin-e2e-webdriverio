@@ -2,6 +2,7 @@ const {
   PLUGIN_NAME,
   WDIO_CONFIG_DEFAULT_PATH,
   WDIO_CONFIG_OVERRIDE_PATH,
+  DEFAULT_MODE,
   ON,
   OFF,
 } = require('./lib/constants')
@@ -65,19 +66,28 @@ function WDIOBinPath(api) {
   }
 }
 
-module.exports.WDIOConfigDefault = () => require('./wdio.conf.default.js')
-module.exports.capabilities = require('./lib/capabilities')
-module.exports.util = require('./lib/util')
-const defaultModes = module.exports.defaultModes = {
-  // @note Command `vue-cli-service serve` is issued if option `baseUrl` undefined. The command
-  // starts the "development" server in the mode specified here. Default Vue CLI configuration
-  // enables Webpack HMR in `development` mode only. If mode set to anything other than `production`
-  // or `development` the app will not render as it is unable to connect to the HMR socket.
-  //
-  // @see https://cli.vuejs.org/guide/mode-and-env.html#modes
-  'test:e2e': 'production',
+// @note Vue CLI Service applies environment before `registerCommand` called. If `--mode` defined
+// the plugin **MUST BE** evaluated within the specified context.
+//
+// @see https://cli.vuejs.org/guide/mode-and-env.html#modes
+function handleMode() {
+  const modePos = process.argv.indexOf('--mode')
+
+  if (modePos !== -1) {
+    process.env.VUE_CLI_MODE = process.argv[modePos + 1]
+  }
+
+  if (!process.env.VUE_CLI_MODE && process.env.NODE_ENV) {
+    process.env.VUE_CLI_MODE = process.env.NODE_ENV
+  }
+
+  return process.env.VUE_CLI_MODE
 }
 
+// @note If `--baseUrl` undefined `vue-cli-service serve` will be invoked. The command
+// starts the "development" server according to `process.env.VUE_CLI_MODE`.
+// Default Vue CLI configuration enables Webpack HMR in `production` and `development` modes only.
+// If other, the app will not render as it is unable to connect to the HMR socket.
 async function handleBaseUrl(args, rawArgs, api, options) {
   let serverPromise
 
@@ -87,7 +97,7 @@ async function handleBaseUrl(args, rawArgs, api, options) {
   if (args.baseUrl) {
     serverPromise = Promise.resolve({ url: args.baseUrl })
   } else {
-    const mode = args.mode || options.mode || defaultModes['test:e2e']
+    const mode = process.env.VUE_CLI_MODE || options.mode
 
     serverPromise = options.baseUrl
       ? Promise.resolve({ url: options.baseUrl })
@@ -221,13 +231,19 @@ function removeArg(rawArgs, arg, offset = 1) {
 
 if (process.env.VUE_CLI_TEST) {
   Object.assign(module.exports, {
-    WDIOBinPath,
     handleBaseUrl,
-    handlePort,
-    handleHeadless,
-    handleDebug,
     handleCapabilities,
-    handleSpecs,
     handleConfig,
+    handleDebug,
+    handleHeadless,
+    handleMode,
+    handlePort,
+    handleSpecs,
+    WDIOBinPath,
   })
 }
+
+module.exports.WDIOConfigDefault = () => require('./wdio.conf.default.js')
+module.exports.capabilities = require('./lib/capabilities')
+module.exports.util = require('./lib/util')
+module.exports.defaultModes = { 'test:e2e': handleMode() || DEFAULT_MODE }
