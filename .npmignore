@@ -2,5 +2,4 @@ __tests__
 __mocks__
 jest.config.js
 .eslintrc.js
-dummy
-coverage
+scripts/test/dummy.js
