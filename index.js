@@ -48,9 +48,14 @@ module.exports = (api, options) => {
       runner.on('exit', code => process.exit(code))
     }
 
-    // @todo WDIO launcher returns exit code 1 on failure consequently execa throws,
-    // catch to suppress unnecessary stdout pollution.
-    return runner.catch(err => error(err.message))
+    return runner.catch(err => {
+      error(err.message)
+
+      // exit with non-zero code on test failure
+      if (err.code !== 0) {
+        process.exit(err.code)
+      }
+    })
   })
 }
 
