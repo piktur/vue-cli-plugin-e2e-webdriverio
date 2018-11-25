@@ -71,8 +71,8 @@ function WDIOBinPath(api) {
   }
 }
 
-// @note Vue CLI Service applies environment before `registerCommand` called. If `--mode` defined
-// the plugin **MUST BE** evaluated within the specified context.
+// @note Vue CLI Service applies environment before `registerCommand` called.
+// If `--mode` defined the plugin **MUST BE** evaluated within the specified context.
 //
 // @see https://cli.vuejs.org/guide/mode-and-env.html#modes
 function handleMode() {

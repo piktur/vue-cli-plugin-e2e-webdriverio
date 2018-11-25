@@ -16,7 +16,7 @@ module.exports = (api, options) => {
 
   api.extendPackage({
     scripts: {
-      'test:e2e': mode ? `NODE_ENV=${mode} VUE_CLI_MODE=${mode} ${cmd}` : cmd,
+      'test:e2e': mode ? `${cmd} --mode ${mode}` : cmd,
     },
     vue: {
       pluginOptions: {

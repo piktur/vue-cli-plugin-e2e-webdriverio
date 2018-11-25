@@ -20,7 +20,7 @@ describe('when mode', async () => {
     })
 
     expect(pkg.scripts).toMatchObject({
-      'test:e2e': `NODE_ENV=${mode} VUE_CLI_MODE=${mode} vue-cli-service test:e2e`,
+      'test:e2e': `vue-cli-service test:e2e --mode ${mode}`,
     })
   })
 })
