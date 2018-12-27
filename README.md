@@ -39,9 +39,9 @@ The *task* may also be run via `vue ui`.
 
 ## Configuration
 
-Defaults defined on *plugin invokation* will be stored in `vue.config.js`.
+Defaults defined on *plugin invocation* will be stored in `vue.config.js`.
 
-Defaults will be overriden by command line options on *command invokation*.
+Defaults will be overriden by command line options on *command invocation*.
 
 Settings defined within `<projectRoot>/wdio.conf.js` will be **merged** with the plugin's defaults.
 
