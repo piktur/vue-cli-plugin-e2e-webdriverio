@@ -60,15 +60,7 @@ module.exports = (api, options) => {
 }
 
 function WDIOBinPath(api) {
-  try {
-    return api.resolve('./node_modules/webdriverio/bin/wdio')
-  } catch (err) {
-    if (err.code === 'MODULE_NOT_FOUND') {
-      return api.resolve('./node_modules/.bin/wdio')
-    } else {
-      throw err
-    }
-  }
+  return api.resolve('./node_modules/.bin/wdio')
 }
 
 // @note Vue CLI Service applies environment before `registerCommand` called.
@@ -104,9 +96,9 @@ async function handleBaseUrl(args, rawArgs, api, options) {
   } else {
     const mode = process.env.VUE_CLI_MODE || options.mode
 
-    serverPromise = options.baseUrl
-      ? Promise.resolve({ url: options.baseUrl })
-      : api.service.run('serve', { mode })
+    serverPromise = options.baseUrl ?
+      Promise.resolve({ url: options.baseUrl }) :
+      api.service.run('serve', { mode })
   }
 
   try {
@@ -192,8 +184,8 @@ function handleConfig(args, rawArgs, api, options) {
     const error = new Error()
     error.code = 'ENOENT'
     error.message = `The nominated config path: ${configPath} does not exist.\n` +
-    `Run \`${WDIOBinPath(api)}\` to generate the file or,\n` +
-    `run command \`${en.usage}\` without option \`--config\` to use plugin defaults.`
+      `Run \`${WDIOBinPath(api)}\` to generate the file or,\n` +
+      `run command \`${en.usage}\` without option \`--config\` to use plugin defaults.`
 
     throw error
   }
@@ -218,9 +210,12 @@ function switchMode(option, args, rawArgs, options, on, off) {
   removeArg(rawArgs, `no-${option}`, 0)
 
   switch (args[option]) {
-  case true: return on()
-  case false: return off()
-  case undefined: return options[option] ? on() : off()
+    case true:
+      return on()
+    case false:
+      return off()
+    case undefined:
+      return options[option] ? on() : off()
   }
 }
 

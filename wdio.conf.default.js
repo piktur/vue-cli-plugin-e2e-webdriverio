@@ -6,8 +6,8 @@ const config = module.exports.config = {
   ...base,
   capabilities: [],
   protocol: 'http',
-  chromeDriverArgs: chromeDriverArgs(),
-  services: ['chromedriver'],
+  // chromeDriverArgs: chromeDriverArgs(),
+  services: ['selenium-standalone'],
   reporters: ['spec'],
   framework: 'mocha',
   mochaOpts: {
