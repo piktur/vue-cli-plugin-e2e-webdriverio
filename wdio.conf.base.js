@@ -8,7 +8,7 @@ module.exports.config = {
   path: '/wd/hub', // must be absolute
   maxInstances: 1,
   sync: true,
-  logLevel: 'debug',
+  logLevel: 'silent',
   coloredLogs: true,
   deprecationWarnings: false,
   waitforTimeout: 20000,
