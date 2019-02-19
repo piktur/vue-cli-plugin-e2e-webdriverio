@@ -92,6 +92,7 @@ Selenium commands will be executed **synchronously** by default. To override:
 ```js
   // wdio.conf.js
   const { WDIOConfigDefault, capabilities, util } = require('vue-cli-plugin-e2e-webdriverio')
+  const { resizeViewport } = util
   const { Chrome } = capabilities
 
   const base = WDIOConfigDefault().config
@@ -115,6 +116,18 @@ Selenium commands will be executed **synchronously** by default. To override:
         // etc...
       })
     ],
+
+    beforeSuite: [
+      resizeViewport,
+      anotherFunction,
+    ]
+
+    // OR
+
+    beforeSuite: (suite) => {
+      resizeViewport()
+      // your behaviour here...
+    }
   }
 ```
 
@@ -180,6 +193,10 @@ Returns the predefined capability.
 ### `capabilities.android(options: object) : capabilities.Chrome`
 
 Returns the predefined capability.
+
+### `util.resizeViewport() : void`
+
+If current *capability* has property `viewportSize` this function will issue `WebdriverIO` command to resize the current browser *window* so that inner dimensions match `viewportSize`.
 
 ### `util.saveScreenshot(test: object) : void`
 

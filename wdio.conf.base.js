@@ -1,4 +1,5 @@
 const path = require('path')
+const { isInteractive, resizeViewport } = require('./lib/util')
 
 // @see http://webdriver.io/guide/testrunner/configurationfile.html
 module.exports.config = {
@@ -25,4 +26,10 @@ function specs() {
   }
 }
 
-module.exports.hooks = []
+function beforeSuite(suite) {
+  if (isInteractive()) resizeViewport()
+}
+
+module.exports.hooks = [
+  beforeSuite,
+]
