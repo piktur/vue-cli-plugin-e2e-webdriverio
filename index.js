@@ -129,10 +129,8 @@ async function handlePort(args, rawArgs) {
 function handleHeadless(...args) {
   switchMode('headless', ...args, () => {
     process.env.VUE_CLI_WDIO_HEADLESS = ON
-    process.env.VUE_CLI_WDIO_INTERACTIVE = OFF
   }, () => {
     process.env.VUE_CLI_WDIO_HEADLESS = OFF
-    process.env.VUE_CLI_WDIO_INTERACTIVE = ON
   })
 }
 
