@@ -146,8 +146,8 @@ function handleCapabilities(args, rawArgs, { capabilities }) {
 
   if (args.capabilities) {
     process.env.VUE_CLI_WDIO_CAPABILITIES = args.capabilities
-  } else {
-    capabilities && (process.env.VUE_CLI_WDIO_CAPABILITIES = capabilities)
+  } else if (capabilities) {
+    process.env.VUE_CLI_WDIO_CAPABILITIES = capabilities
   }
 }
 
@@ -156,8 +156,8 @@ function handleSpecs(args, rawArgs, { specs }) {
 
   if (args.specs) {
     process.env.VUE_CLI_WDIO_SPECS = args.specs
-  } else {
-    specs && (process.env.VUE_CLI_WDIO_SPECS = specs)
+  } else if (specs) {
+    process.env.VUE_CLI_WDIO_SPECS = specs
   }
 }
 
@@ -170,8 +170,8 @@ function handleConfig(args, rawArgs, api, options) {
 
   if (args.config) {
     configPath = args.config
-  } else {
-    options.config && (configPath = options.config)
+  } else if (options.config) {
+    configPath = options.config
   }
 
   if (configPath && !path.isAbsolute(configPath)) {
