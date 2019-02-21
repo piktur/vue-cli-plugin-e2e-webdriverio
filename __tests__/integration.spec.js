@@ -3,6 +3,8 @@ const fs = require('fs-extra')
 const { execa } = require('@vue/cli-shared-utils')
 const dummyRoot = path.resolve(__dirname, '../dummy')
 
+const timeout = 60 * 1000 // one minute
+
 test('runs command', async () => {
   if (fs.exists(dummyRoot)) {
     const runner = await execa(
@@ -16,4 +18,4 @@ test('runs command', async () => {
   } else {
     throw Error('Dummy project does not exist. Run `yarn test:dummy` to setup the dummy project')
   }
-})
+}, timeout)
