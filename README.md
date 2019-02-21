@@ -37,6 +37,11 @@ The *task* may also be run via `vue ui`.
 
 ## [Dependencies](https://github.com/piktur/vue-cli-plugin-e2e-webdriverio/network/dependencies)
 
+### Compatibility
+
+* `1.x` only supports `webdriverio@4.x`
+* `2.x` only supports `webdriverio@5.x`
+
 ## Configuration
 
 Defaults defined on *plugin invokation* will be stored in `vue.config.js`.
