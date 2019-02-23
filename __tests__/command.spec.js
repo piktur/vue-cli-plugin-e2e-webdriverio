@@ -3,7 +3,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const pluginRoot = path.resolve(__dirname, '..')
 const plugin = require('../index.js')
-const { isHeadless, isDebug, isInteractive } = require('../lib/util')
+const { isHeadless, isDebug } = require('../lib/util')
 const { WDIO_CONFIG_OVERRIDE_PATH, WDIO_CONFIG_DEFAULT_PATH } = require('../lib/constants')
 
 describe('exports', () => {
@@ -175,7 +175,6 @@ describe('handleHeadless()', () => {
 
   beforeEach(() => {
     delete process.env.VUE_CLI_WDIO_HEADLESS
-    delete process.env.VUE_CLI_WDIO_INTERACTIVE
   })
 
   describe('with --headless', () => {
@@ -188,7 +187,6 @@ describe('handleHeadless()', () => {
 
       expect(rawArgs).not.toContain('--headless')
       expect(isHeadless()).toBeTruthy
-      expect(isInteractive()).toBeFalsey
     })
   })
 
@@ -202,7 +200,6 @@ describe('handleHeadless()', () => {
 
       expect(rawArgs).not.toContain('--no-headless')
       expect(isHeadless()).toBeFalsey
-      expect(isInteractive()).toBeTruthy
     })
   })
 
@@ -215,7 +212,6 @@ describe('handleHeadless()', () => {
       fn(args, rawArgs, options)
 
       expect(isHeadless()).toBeTruthy
-      expect(isInteractive()).toBeFalsey
     })
   })
 
@@ -228,7 +224,6 @@ describe('handleHeadless()', () => {
       fn(args, rawArgs, options)
 
       expect(isHeadless()).toBeFalsey
-      expect(isInteractive()).toBeTruthy
     })
   })
 
@@ -242,7 +237,6 @@ describe('handleHeadless()', () => {
         fn(args, rawArgs, options)
 
         expect(isHeadless()).toBeFalsey
-        expect(isInteractive()).toBeTruthy
       })
     })
 
@@ -255,7 +249,6 @@ describe('handleHeadless()', () => {
         fn(args, rawArgs, options)
 
         expect(isHeadless()).toBeTruthy
-        expect(isInteractive()).toBeFalsey
       })
     })
   })

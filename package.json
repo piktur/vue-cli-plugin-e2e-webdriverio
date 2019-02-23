@@ -1,41 +1,43 @@
 {
   "name": "vue-cli-plugin-e2e-webdriverio",
-  "version": "1.0.2",
+  "version": "2.0.0",
+  "private": false,
   "description": "e2e-webdriverio plugin for vue-cli",
-  "main": "index.js",
+  "keywords": [
+    "cli",
+    "e2e",
+    "e2e-webdriverio",
+    "test",
+    "vue",
+    "vue-cli",
+    "wdio",
+    "webdriver"
+  ],
+  "homepage": "https://github.com/piktur/vue-cli-plugin-e2e-webdriverio#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/piktur/vue-cli-plugin-e2e-webdriverio.git"
   },
-  "author": "Daniel Small <piktur.io@gmail.com>",
-  "homepage": "https://github.com/piktur/vue-cli-plugin-e2e-webdriverio#readme",
-  "keywords": [
-    "vue",
-    "cli",
-    "vue-cli",
-    "e2e-webdriverio",
-    "e2e",
-    "test",
-    "webdriver",
-    "wdio"
-  ],
   "license": "MIT",
-  "private": false,
+  "author": "Daniel Small <piktur.io@gmail.com>",
+  "main": "index.js",
   "scripts": {
     "test": "jest",
     "test:dummy": "node scripts/test/dummy --path $PWD"
   },
   "dependencies": {
     "@vue/cli-shared-utils": "^3.0.5",
+    "@wdio/cli": "^5.0.0",
+    "@wdio/local-runner": "^5.0.0",
+    "@wdio/mocha-framework": "^5.0.0",
+    "@wdio/spec-reporter": "^5.0.0",
+    "@wdio/sync": "^5.0.0",
     "chai": "^4.1.2",
-    "chromedriver": "^2.42.0",
+    "chromedriver": "^2.45.0",
     "get-port": "^4.0.0",
     "lodash.merge": "^4.6.1",
-    "selenium-server": "^3.14.0",
-    "wdio-chromedriver-service": "^0.1.5",
-    "wdio-mocha-framework": "^0.6.2",
-    "wdio-spec-reporter": "^0.1.5",
-    "webdriverio": "^4.13.2"
+    "wdio-chromedriver-service": "^5.0.0",
+    "webdriverio": "^5.0.0"
   },
   "devDependencies": {
     "@vue/cli": "^3.0.5",
