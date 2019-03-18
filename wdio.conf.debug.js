@@ -17,7 +17,7 @@ if (isDebug()) {
 }
 
 function afterTest(test) {
-  if (!test.passed) saveScreenshot(test)
+  if (isDebug() && !test.passed) saveScreenshot(test)
 }
 
 function onError(message) {
