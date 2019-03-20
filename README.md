@@ -97,7 +97,7 @@ Selenium commands will be executed **synchronously** by default. To override:
 ```js
   // wdio.conf.js
   const { WDIOConfigDefault, capabilities, util } = require('vue-cli-plugin-e2e-webdriverio')
-  const { resizeViewport } = util
+  const { resizeViewport, isDebug } = util
   const { Chrome } = capabilities
 
   const base = WDIOConfigDefault().config
@@ -126,6 +126,15 @@ Selenium commands will be executed **synchronously** by default. To override:
       resizeViewport,
       anotherFunction,
     ]
+
+    afterTest: [
+      (test) => {
+        if (isDebug() && !test.passed) {
+          saveScreenshot(test, 'path/to/screenshot.png')
+        }
+      },
+      // ...
+    }
 
     // OR
 
