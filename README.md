@@ -203,9 +203,9 @@ Returns the predefined capability.
 
 If current *capability* has property `viewportSize` this function will issue `WebdriverIO` command to resize the current browser *window* so that inner dimensions match `viewportSize`.
 
-### `util.saveScreenshot(test: object) : void`
+### `util.saveScreenshot(test: object, path: string) : void`
 
-Saves screenshot to given `screenshotPath` or tmp directory and logs error info to stdout.
+Saves screenshot to given `path` or tmp directory and logs error info to stdout.
 
 ### `util.printBrowserConsole() : void`
 
