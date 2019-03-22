@@ -1,5 +1,5 @@
 const base = require('./wdio.conf.base').config
-const { isDebug, saveScreenshot, printBrowserConsole } = require('./lib/util')
+const { isDebug, printBrowserConsole } = require('./lib/util')
 
 const config = module.exports.config = {
   ...base,
@@ -16,16 +16,11 @@ if (isDebug()) {
   })
 }
 
-function afterTest(test) {
-  if (!test.passed) saveScreenshot(test)
-}
-
 function onError(message) {
   if (isDebug()) printBrowserConsole()
 }
 
 module.exports.hooks = [
   ...require('./wdio.conf.base').hooks,
-  afterTest,
   onError,
 ]
