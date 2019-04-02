@@ -37,6 +37,11 @@ The *task* may also be run via `vue ui`.
 
 ## [Dependencies](https://github.com/piktur/vue-cli-plugin-e2e-webdriverio/network/dependencies)
 
+### Compatibility
+
+* `1.x` only supports `webdriverio@4.x`
+* `2.x` only supports `webdriverio@5.x`
+
 ## Configuration
 
 Defaults defined on *plugin invocation* will be stored in `vue.config.js`.
@@ -92,7 +97,7 @@ Selenium commands will be executed **synchronously** by default. To override:
 ```js
   // wdio.conf.js
   const { WDIOConfigDefault, capabilities, util } = require('vue-cli-plugin-e2e-webdriverio')
-  const { resizeViewport } = util
+  const { resizeViewport, isDebug } = util
   const { Chrome } = capabilities
 
   const base = WDIOConfigDefault().config
@@ -121,6 +126,15 @@ Selenium commands will be executed **synchronously** by default. To override:
       resizeViewport,
       anotherFunction,
     ]
+
+    afterTest: [
+      (test) => {
+        if (isDebug() && !test.passed) {
+          saveScreenshot(test, 'path/to/screenshot.png')
+        }
+      },
+      // ...
+    }
 
     // OR
 
@@ -198,9 +212,9 @@ Returns the predefined capability.
 
 If current *capability* has property `viewportSize` this function will issue `WebdriverIO` command to resize the current browser *window* so that inner dimensions match `viewportSize`.
 
-### `util.saveScreenshot(test: object) : void`
+### `util.saveScreenshot(test: object, path: string) : void`
 
-Saves screenshot to given `screenshotPath` or tmp directory and logs error info to stdout.
+Saves screenshot to given `path` or tmp directory and logs error info to stdout.
 
 ### `util.printBrowserConsole() : void`
 
