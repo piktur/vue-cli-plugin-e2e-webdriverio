@@ -1,5 +1,4 @@
 const path = require('path')
-const { resizeViewport } = require('./lib/util')
 
 // @see http://webdriver.io/guide/testrunner/configurationfile.html
 module.exports.config = {
@@ -25,11 +24,3 @@ function specs() {
     return []
   }
 }
-
-function beforeSuite(suite) {
-  resizeViewport()
-}
-
-module.exports.hooks = [
-  beforeSuite,
-]
