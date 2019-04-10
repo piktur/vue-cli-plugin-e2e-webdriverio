@@ -24,3 +24,5 @@ function specs() {
     return []
   }
 }
+
+module.exports.hooks = []
