@@ -30,9 +30,9 @@ describe('an assertion', function() {
   it('runs', () => {
     browser.url('/')
     const app = browser.$('#app')
-    app.waitForVisible(1000)
+    app.waitForDisplayed(1000)
 
-    assert.ok(app.isVisible())
+    assert.ok(app.isDisplayed())
   })
 })`
 
