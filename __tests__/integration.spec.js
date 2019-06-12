@@ -6,7 +6,7 @@ const dummyRoot = path.resolve(__dirname, '../dummy')
 const timeout = 60 * 1000 // one minute
 
 test('runs command', async () => {
-  if (fs.exists(dummyRoot)) {
+  if (await fs.exists(dummyRoot)) {
     const runner = await execa(
       'yarn',
       ['test:e2e', '--spec', 'spec/dummy.spec.js', '--mode', 'development', '--headless'],
