@@ -200,7 +200,15 @@ function handleConfig(args, rawArgs, api, options) {
 
   // Append config path to args
   process.env.VUE_CLI_WDIO_DEFAULT = configPath ? OFF : ON
-  rawArgs.push(configPath || WDIO_CONFIG_DEFAULT_PATH)
+
+  let resolvedConfigPath = configPath || WDIO_CONFIG_DEFAULT_PATH
+
+  if (path.isAbsolute(resolvedConfigPath)) {
+    // wdio runner only accepts relative paths
+    resolvedConfigPath = path.relative(process.cwd(), resolvedConfigPath)
+  }
+
+  rawArgs.push(resolvedConfigPath)
 }
 
 function switchMode(option, args, rawArgs, options, on, off) {
