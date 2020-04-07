@@ -222,4 +222,4 @@ Log all browser output to stdout.
 
 ## Installing in an Already Created Project
 
-**Commit** your project and run `vue add vue-cli-plugin-e2e-webdriver`
+**Commit** your project and run `vue add vue-cli-plugin-e2e-webdriverio`
